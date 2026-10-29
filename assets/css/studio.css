@@ -1,0 +1,1211 @@
+/*
+  ╔══════════════════════════════════════════════════════════════╗
+  ║   STUDIO.CSS — Estilos del Creador Musical                 ║
+  ╠══════════════════════════════════════════════════════════════╣
+  ║  ÍNDICE:                                                    ║
+  ║  1. Variables y Reset                                       ║
+  ║  2. Welcome Screen / Tutorial                               ║
+  ║  3. Studio App Layout                                       ║
+  ║  4. Header y Transport                                      ║
+  ║  5. Secuenciador de Batería                                 ║
+  ║  6. Piano Mágico                                            ║
+  ║  7. Cámara y Manos                                          ║
+  ║  8. Mezclador                                               ║
+  ║  9. Animaciones                                             ║
+  ║  10. Responsive                                             ║
+  ╚══════════════════════════════════════════════════════════════╝
+*/
+
+/* ── 1. VARIABLES Y RESET ── */
+:root {
+  /* Paleta: misma que index.html para coherencia */
+  --bg:          #0B4A5E;               /* teal-oscuro: fondo general */
+  --bg-surface:  #0F6580;               /* teal-profundo: tarjetas y secciones */
+  --bg-elevated: #1F2A8C;               /* azul-índigo: elementos elevados (como los reproductores) */
+  --accent:      #E0148C;               /* magenta-neón: acento principal */
+  --accent-dim:  rgba(224,20,140,0.3);
+  --ocean:       #8CC4D6;               /* aqua-claro: detalles secundarios */
+  --ocean-dim:   rgba(140,196,214,0.2);
+  --gold:        #B8F000;               /* lima-neón: resalte puntual */
+  --text:        #DCE9F2;               /* azul-hielo: texto principal */
+  --text-muted:  #B5D3DE;               /* texto secundario */
+  --border:      rgba(140,196,214,0.25);
+
+  /* Fuentes */
+  --font-display: 'Cinzel Decorative', serif;
+  --font-ui:      'Rajdhani', 'Segoe UI', sans-serif;
+  --font-body:    'IM Fell English', Georgia, serif;
+
+  /* Geometría del studio */
+  --header-h:    64px;
+  --left-w:      65%;   /* Ancho columna izquierda (seq + piano) */
+  --right-w:     35%;   /* Ancho columna derecha (cámara + mixer) */
+  --seq-name-w:  90px;  /* Ancho de la etiqueta de instrumento */
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  overflow: hidden; /* Pantalla completa sin scroll */
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+}
+
+button { cursor: pointer; }
+input[type=range] { cursor: pointer; }
+
+ul { list-style: none; }
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--accent-dim); border-radius: 2px; }
+
+/* Foco accesible */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   2. WELCOME SCREEN / TUTORIAL
+   ══════════════════════════════════════════════════════════════ */
+.welcome-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: radial-gradient(ellipse at 50% 40%, var(--bg-surface) 0%, var(--bg) 70%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 2rem;
+}
+
+/* Fondo decorativo SVG */
+.welcome-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.welcome-bg-svg { width: 100%; height: 100%; }
+
+.welcome-content {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+/* Header del welcome */
+.welcome-header { text-align: center; }
+
+.welcome-sigil {
+  display: block;
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  animation: floatSigil 3s ease-in-out infinite;
+}
+
+.welcome-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  color: var(--text);
+  letter-spacing: 0.1em;
+  /* Gradiente en el texto */
+  background: linear-gradient(135deg, var(--text) 0%, var(--accent) 50%, var(--ocean) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.welcome-subtitle {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+/* Cards de instrucciones */
+.how-to-play {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  width: 100%;
+}
+
+.how-card {
+  background: rgba(224,20,140,0.06);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.25rem;
+  transition: all 0.2s;
+}
+
+.how-card:hover {
+  background: rgba(224,20,140,0.12);
+  border-color: rgba(224,20,140,0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(224,20,140,0.15);
+}
+
+.how-icon { font-size: 2rem; margin-bottom: 0.5rem; display: block; }
+
+.how-title {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  color: var(--text);
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.05em;
+}
+
+.how-desc {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* Consejos */
+.welcome-tips {
+  background: rgba(34,211,238,0.04);
+  border: 1px solid var(--ocean-dim);
+  border-radius: 6px;
+  padding: 1rem 1.5rem;
+  width: 100%;
+}
+
+.tips-title {
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--ocean);
+  margin-bottom: 0.5rem;
+}
+
+.tips-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.tips-list li {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  padding-left: 1rem;
+  position: relative;
+}
+
+.tips-list li::before {
+  content: '·';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+}
+
+/* Botón de inicio */
+.btn-start {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 3rem;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--bg-elevated) 100%);
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  transition: all 0.2s;
+  box-shadow: 0 0 30px var(--accent-dim);
+}
+
+.btn-start:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 50px var(--accent-dim);
+}
+
+.btn-start-icon {
+  animation: sigilSpinWelcome 4s linear infinite;
+  display: inline-block;
+}
+
+.welcome-back-link {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  transition: color 0.15s;
+}
+.welcome-back-link:hover { color: var(--text); }
+
+
+/* ══════════════════════════════════════════════════════════════
+   3. STUDIO APP LAYOUT
+   ══════════════════════════════════════════════════════════════ */
+.studio-app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Quitar el atributo hidden visualmente con display:flex */
+.studio-app:not([hidden]) { display: flex; }
+
+.studio-main {
+  display: grid;
+  grid-template-columns: var(--left-w) var(--right-w);
+  flex: 1;
+  overflow: hidden;
+  gap: 0;
+}
+
+/* Columnas con scroll propio */
+.studio-left,
+.studio-right {
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.studio-left  { border-right: 1px solid var(--border); }
+
+/* Etiqueta de sección */
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-label h2 {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  color: var(--text);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.section-label span:first-child { font-size: 1.1rem; }
+
+
+/* ══════════════════════════════════════════════════════════════
+   4. HEADER Y TRANSPORT
+   ══════════════════════════════════════════════════════════════ */
+.studio-header {
+  height: var(--header-h);
+  min-height: var(--header-h);
+  background: color-mix(in srgb, var(--bg) 95%, transparent);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 1rem;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+
+.studio-back {
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 0.15em;
+  white-space: nowrap;
+  border: 1px solid var(--border);
+  padding: 0.3rem 0.6rem;
+  border-radius: 3px;
+  transition: all 0.15s;
+  text-decoration: none;
+}
+.studio-back:hover { color: var(--text); border-color: var(--accent-dim); }
+
+.studio-title {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  color: var(--text);
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+/* Controles de transporte */
+.transport-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* BPM control */
+.bpm-control {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ctrl-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.bpm-slider {
+  width: 90px;
+  height: 4px;
+  appearance: none;
+  background: var(--bg-elevated);
+  border-radius: 2px;
+  outline: none;
+}
+
+.bpm-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: var(--accent);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--accent-dim);
+}
+
+.bpm-display {
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  color: var(--accent);
+  min-width: 2.5rem;
+  font-weight: 600;
+}
+
+/* Botones de transporte */
+.btn-transport {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 4px;
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  border: 1px solid;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.btn-play-main {
+  background: var(--accent-dim);
+  border-color: var(--accent-dim);
+  color: var(--text);
+}
+.btn-play-main:hover { background: var(--accent-dim); border-color: var(--accent); }
+.btn-play-main.is-playing {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  box-shadow: 0 0 12px var(--accent-dim);
+}
+
+.btn-record {
+  background: rgba(224,20,140,0.1);
+  border-color: rgba(224,20,140,0.3);
+  color: var(--text-muted);
+}
+.btn-record:hover { background: rgba(224,20,140,0.2); border-color: var(--accent); }
+.btn-record.is-recording {
+  background: rgba(224,20,140,0.3);
+  border-color: var(--accent);
+  animation: recordPulse 1s ease-in-out infinite;
+  color: var(--text);
+}
+
+.btn-download {
+  background: rgba(184,240,0,0.08);
+  border-color: rgba(184,240,0,0.3);
+  color: var(--gold);
+}
+.btn-download:hover { background: rgba(184,240,0,0.15); border-color: var(--gold); }
+
+.btn-clear {
+  background: rgba(140,196,214,0.08);
+  border-color: rgba(140,196,214,0.2);
+  color: var(--ocean);
+}
+.btn-clear:hover { background: rgba(140,196,214,0.15); border-color: var(--ocean); }
+
+.btn-help {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(224,20,140,0.08);
+  border-color: var(--border);
+  color: var(--text-muted);
+  justify-content: center;
+  font-size: 0.9rem;
+}
+.btn-help:hover { color: var(--text); border-color: var(--accent); }
+
+/* Status bar */
+.studio-status {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  padding-left: 0.5rem;
+  border-left: 1px solid var(--border);
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   5. SECUENCIADOR DE BATERÍA
+   ══════════════════════════════════════════════════════════════ */
+.sequencer-section {
+  background: color-mix(in srgb, var(--bg-surface) 60%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+/* Indicador del paso activo */
+.step-indicator {
+  margin-left: auto;
+  font-family: var(--font-ui);
+  font-size: 0.65rem;
+  color: var(--ocean);
+  letter-spacing: 0.15em;
+}
+
+/* Números de columna */
+.seq-column-nums {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.seq-track-name-spacer { width: var(--seq-name-w); flex-shrink: 0; }
+
+.seq-steps-header {
+  display: grid;
+  grid-template-columns: repeat(16, 1fr);
+  flex: 1;
+  gap: 3px;
+}
+
+.seq-steps-header span {
+  text-align: center;
+  font-size: 0.55rem;
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+
+/* Fila del secuenciador */
+.seq-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 4px;
+}
+
+/* Nombre del instrumento */
+.seq-track-name {
+  width: var(--seq-name-w);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+.track-emoji { font-size: 0.9rem; }
+
+/* Contenedor de los 16 pasos */
+.seq-steps {
+  display: grid;
+  grid-template-columns: repeat(16, 1fr);
+  flex: 1;
+  gap: 3px;
+}
+
+/*
+  Botón de paso del secuenciador.
+  Estado inactivo: cuadrado apagado.
+  Estado activo (.is-on): color de la fila (var(--key-color) inyectado por JS).
+  Estado sonando (.is-current): brillo extra.
+*/
+.seq-step {
+  aspect-ratio: 1;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg-elevated) 80%, transparent);
+  transition: all 0.08s;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+/* División visual cada 4 pasos (grupos de 4 = un compás) */
+.seq-step:nth-child(4n+1) { margin-left: 3px; }
+
+.seq-step::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--step-color, var(--accent));
+  opacity: 0;
+  transition: opacity 0.08s;
+  border-radius: 2px;
+}
+
+/* Paso ACTIVO (encendido) */
+.seq-step.is-on {
+  border-color: var(--step-color, var(--accent));
+  box-shadow: 0 0 6px var(--step-color, var(--accent));
+}
+
+.seq-step.is-on::after { opacity: 0.85; }
+
+/* Paso ACTUAL (el que está sonando ahora) */
+.seq-step.is-current {
+  border-color: rgba(255,255,255,0.8) !important;
+  box-shadow: 0 0 10px rgba(255,255,255,0.5) !important;
+}
+
+.seq-step.is-on.is-current::after { opacity: 1; }
+
+.seq-step:hover {
+  border-color: var(--accent-dim);
+  background: color-mix(in srgb, var(--bg-elevated) 100%, transparent);
+}
+
+/* Presets de ritmo */
+.seq-presets {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.presets-label {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.preset-btn {
+  padding: 0.25rem 0.65rem;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  background: rgba(224,20,140,0.06);
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  transition: all 0.15s;
+}
+
+.preset-btn:hover {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   6. PIANO MÁGICO
+   ══════════════════════════════════════════════════════════════ */
+.piano-section {
+  background: rgba(10,8,30,0.7);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.piano-mode-label {
+  margin-left: auto;
+  font-size: 0.65rem;
+  color: var(--ocean);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+/* Selector de escala */
+.scale-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.scale-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-right: 0.2rem;
+}
+
+.scale-btn {
+  padding: 0.25rem 0.75rem;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  background: rgba(139,92,246,0.06);
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  transition: all 0.15s;
+}
+
+.scale-btn.active,
+.scale-btn:hover {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+/*
+  Teclas del piano.
+  Las teclas se generan por JS. Cada una tiene un color único
+  inyectado como variable CSS --key-color.
+  El layout es una fila de teclas grandes, diseñadas para ser tocadas
+  con el dedo en pantalla táctil o con la cámara.
+*/
+.piano-keys {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 6px;
+  margin-bottom: 0.75rem;
+}
+
+.piano-key {
+  aspect-ratio: 2/3;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 0.5rem;
+  gap: 0.15rem;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.1s;
+  /* El color viene de JS: style="--key-color: #xxx" */
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--key-color, #6b21a8) 60%, black),
+    color-mix(in srgb, var(--key-color, #6b21a8) 40%, black)
+  );
+  border-color: color-mix(in srgb, var(--key-color, #6b21a8) 70%, transparent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--key-color, #6b21a8) 30%, transparent),
+              inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+/* Efecto de brillo interno al presionar */
+.piano-key::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 30%, rgba(255,255,255,0.15), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+
+.piano-key:hover::before,
+.piano-key.is-active::before { opacity: 1; }
+
+.piano-key:hover,
+.piano-key.is-active {
+  transform: translateY(2px) scale(0.97);
+  border-color: white;
+  box-shadow: 0 0 25px var(--key-color, var(--accent)),
+              0 0 50px color-mix(in srgb, var(--key-color, var(--accent)) 40%, transparent),
+              inset 0 1px 0 rgba(255,255,255,0.3);
+}
+
+/* Nombre del acorde */
+.key-chord-name {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.9);
+  letter-spacing: 0.05em;
+  position: relative;
+  z-index: 1;
+}
+
+/* Nombre emocional del acorde (Misterio, Alegría, etc.) */
+.key-emotion {
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.55);
+  font-style: italic;
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* Visualizador del piano (barras de EQ animadas) */
+.piano-visualizer {
+  height: 40px;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  margin-bottom: 0.5rem;
+  padding: 0 2px;
+}
+
+.viz-bar {
+  flex: 1;
+  background: var(--accent-dim);
+  border-radius: 2px 2px 0 0;
+  height: 4px;
+  transition: height 0.08s ease-out, background 0.08s;
+}
+
+.viz-bar.is-active {
+  background: linear-gradient(to top, var(--accent), var(--ocean));
+  box-shadow: 0 0 6px var(--accent);
+}
+
+/* Display del acorde actual */
+.chord-display {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  background: rgba(139,92,246,0.06);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  min-height: 2rem;
+}
+
+.chord-name {
+  font-family: var(--font-ui);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent);
+  min-width: 3rem;
+}
+
+.chord-notes {
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   7. CÁMARA Y MANOS
+   ══════════════════════════════════════════════════════════════ */
+.camera-section {
+  background: rgba(8,15,30,0.7);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.camera-status {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+}
+
+.camera-status.active { color: #6ee7b7; }
+.camera-status.error  { color: #fca5a5; }
+
+.btn-camera {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  border: 1px solid rgba(34,211,238,0.3);
+  background: rgba(34,211,238,0.08);
+  color: var(--ocean);
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  transition: all 0.15s;
+  margin-bottom: 0.75rem;
+  width: 100%;
+  justify-content: center;
+}
+
+.btn-camera:hover { background: rgba(34,211,238,0.15); border-color: var(--ocean); }
+.btn-camera.active { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.4); color: #fca5a5; }
+
+/* Contenedor del video */
+.camera-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/3;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  margin-bottom: 0.75rem;
+}
+
+.camera-container:not([hidden]) { display: block; }
+
+.camera-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1); /* Espejo para que se vea más natural */
+}
+
+/* Canvas overlay de landmarks */
+.camera-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: scaleX(-1); /* Mismo espejo que el video */
+  pointer-events: none;
+}
+
+/* Indicadores de mano detectada */
+.hand-indicators {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 0.5rem;
+  pointer-events: none;
+}
+
+.hand-indicator {
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  background: rgba(0,0,0,0.6);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 0.15rem 0.4rem;
+  color: var(--text-muted);
+  transition: all 0.2s;
+}
+
+.hand-indicator.detected {
+  border-color: var(--ocean);
+  color: var(--ocean);
+  box-shadow: 0 0 8px var(--ocean-dim);
+}
+
+/* Guía de gestos */
+.gesture-guide {
+  background: rgba(15,12,40,0.5);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.75rem;
+}
+
+.gesture-guide-title {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.gesture-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.gesture-item {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.gesture-emoji { font-size: 1.1rem; flex-shrink: 0; }
+
+.gesture-item strong {
+  font-size: 0.7rem;
+  color: var(--text);
+  display: block;
+}
+
+.gesture-item p {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   8. MEZCLADOR
+   ══════════════════════════════════════════════════════════════ */
+.mixer-section {
+  background: rgba(10,8,30,0.7);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+/* Faders verticales en fila */
+.mixer-channels {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.mixer-channel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  flex: 1;
+}
+
+/* Canal del piano con separador visual */
+.mixer-channel--piano {
+  border-left: 1px solid var(--border);
+  padding-left: 0.5rem;
+}
+
+.mixer-label {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.3;
+  letter-spacing: 0.05em;
+}
+
+/*
+  Fader vertical (input range orientado verticalmente).
+  CSS para que el range sea vertical funciona diferente por browser.
+  Chrome/Edge usan writing-mode o appearance.
+*/
+.vol-fader {
+  writing-mode: vertical-lr;   /* Hace el slider vertical en Chrome/Edge */
+  direction: rtl;               /* Invierte la dirección (0 arriba, max abajo → invertido) */
+  appearance: slider-vertical;  /* Firefox */
+  width: 24px;
+  height: 80px;
+  background: var(--bg-elevated);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+/* Thumb del fader */
+.vol-fader::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 8px;
+  background: var(--accent);
+  border-radius: 2px;
+  box-shadow: 0 0 6px var(--accent-dim);
+}
+
+.vol-display {
+  font-size: 0.55rem;
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+}
+
+/* Efectos FX */
+.fx-controls {
+  display: flex;
+  gap: 1rem;
+}
+
+.fx-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1;
+}
+
+.fx-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.fx-item input[type=range] {
+  width: 100%;
+  height: 4px;
+  appearance: none;
+  background: var(--bg-elevated);
+  border-radius: 2px;
+  outline: none;
+}
+
+.fx-item input[type=range]::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: var(--ocean);
+  border-radius: 50%;
+  box-shadow: 0 0 6px var(--ocean-dim);
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   9. ANIMACIONES
+   ══════════════════════════════════════════════════════════════ */
+
+@keyframes floatSigil {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+
+@keyframes sigilSpinWelcome {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes recordPulse {
+  0%, 100% { box-shadow: 0 0 6px rgba(239,68,68,0.4); }
+  50%       { box-shadow: 0 0 20px rgba(239,68,68,0.8); }
+}
+
+/* Flash de paso al sonar */
+@keyframes stepFlash {
+  0%   { opacity: 1; }
+  50%  { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+/* Rebote de tecla del piano */
+@keyframes keyPress {
+  0%   { transform: translateY(0) scale(1); }
+  30%  { transform: translateY(3px) scale(0.97); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+.piano-key.press-anim {
+  animation: keyPress 0.12s ease-out;
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   10. RESPONSIVE
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 1100px) {
+  :root {
+    --left-w:  60%;
+    --right-w: 40%;
+  }
+  .piano-keys { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (max-width: 800px) {
+  .studio-main {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    overflow-y: auto;
+  }
+  .studio-left, .studio-right {
+    overflow: visible;
+    height: auto;
+  }
+  .studio-left { border-right: none; border-bottom: 1px solid var(--border); }
+  .piano-keys  { grid-template-columns: repeat(4, 1fr); }
+  .seq-track-name { width: 70px; }
+  :root { --seq-name-w: 70px; }
+  .how-to-play { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 500px) {
+  .piano-keys { grid-template-columns: repeat(4, 1fr); }
+  .studio-header { flex-wrap: wrap; height: auto; padding: 0.5rem; }
+  :root { --header-h: auto; }
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   17. BAJO — CONTROLES
+   Selector de patrón del bajo debajo del piano.
+   ══════════════════════════════════════════════════════════════ */
+.bass-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(139,92,246,0.04);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  flex-wrap: wrap;
+}
+
+.bass-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-right: 0.2rem;
+  flex-shrink: 0;
+}
+
+/* Botones de patrón del bajo — mismo estilo que .scale-btn */
+.bass-btn {
+  padding: 0.25rem 0.75rem;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  background: rgba(139,92,246,0.06);
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.bass-btn.active,
+.bass-btn:hover {
+  background: rgba(34,211,238,0.15);  /* Cian para distinguirlo del piano */
+  border-color: var(--ocean);
+  color: var(--ocean);
+}
+
+/* Indicación sutil para el usuario */
+.bass-hint {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  font-style: italic;
+  opacity: 0.6;
+  margin-left: auto; /* Empujar al extremo derecho */
+}
+
+/* Canal del bajo en el mezclador — con separador visual como el piano */
+.mixer-channel--bass {
+  border-left: 1px solid rgba(34,211,238,0.3);
+  padding-left: 0.5rem;
+}

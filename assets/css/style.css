@@ -1,0 +1,2607 @@
+/*
+  ╔══════════════════════════════════════════════════════════════╗
+  ║   GRANATTE · STYLESHEET                                      ║
+  ║   Temática: Esoterismo · Mar · Sirenas · Brujería           ║
+  ╠══════════════════════════════════════════════════════════════╣
+  ║  ÍNDICE:                                                    ║
+  ║   1. Variables CSS (:root)  ← cambia colores/fuentes aquí  ║
+  ║   2. Reset y Base                                           ║
+  ║   3. Fondo y Efectos Globales                               ║
+  ║   4. Layout principal (#app)                                ║
+  ║   5. Sidebar Izquierdo                                      ║
+  ║   6. Main Content                                           ║
+  ║   7. Secciones individuales                                 ║
+  ║   8. Componentes (botones, tags, etc.)                      ║
+  ║   9. Galería / Portafolio                                   ║
+  ║  10. Tracks / Música                                        ║
+  ║  11. Sidebar Derecho                                        ║
+  ║  12. Footer                                                 ║
+  ║  13. Cursor personalizado                                   ║
+  ║  14. Animaciones (@keyframes)                               ║
+  ║  15. Responsive                                             ║
+  ╚══════════════════════════════════════════════════════════════╝
+*/
+
+
+/* ══════════════════════════════════════════════════════════════
+   1. VARIABLES CSS — EDITA AQUÍ PARA CAMBIAR EL TEMA VISUAL
+   ══════════════════════════════════════════════════════════════
+   Cambia cualquier valor aquí y se aplica en todo el sitio.
+   Prueba con: --color-accent: #ff6b6b; para un tono cálido.
+*/
+:root {
+  /* ── PALETA DE COLORES ─────────────────────────────────────────
+     Inspirada en la imagen de referencia: pez koi blanco sobre
+     agua teal profunda, flores lavanda helada, ramas negras,
+     cuadrado índigo. Tonos fríos, oceánicos, místicos.
+  ─────────────────────────────────────────────────────────────── */
+
+  /* Fondos — del más oscuro al más claro */
+  --color-bg:           #071E2A;    /* Azul-negro oceánico: fondo más profundo */
+  --color-bg-mid:       #0B3040;    /* Teal muy oscuro: secciones alternas */
+  --color-bg-surface:   #0F4459;    /* Teal medio: superficies de cards/panels */
+  --color-bg-elevated:  #1A5C72;    /* Teal claro: hover y elementos elevados */
+
+  /* Acento principal — azul teal brillante (agua iluminada) */
+  --color-accent:       #3EC6D8;    /* 📝 EDITAR: teal/cian → acento principal */
+  --color-accent-dim:   rgba(62, 198, 216, 0.3);
+  --color-accent-glow:  rgba(62, 198, 216, 0.12);
+
+  /* Acento secundario — celeste perlado (aletas del pez, flores) */
+  --color-ocean:        #8DD4E8;    /* 📝 EDITAR: celeste suave → detalles */
+  --color-ocean-dim:    rgba(141, 212, 232, 0.2);
+
+  /* Acento terciario — índigo profundo (cuadrado de la imagen) */
+  --color-bio:          #4A6FD4;    /* Índigo: elementos especiales */
+  --color-bio-dim:      rgba(74, 111, 212, 0.2);
+
+  /* Dorado → reemplazado por lavanda helada (flores de la imagen) */
+  --color-gold:         #C8D8F0;    /* Lavanda helada / flores */
+  --color-gold-dim:     rgba(200, 216, 240, 0.2);
+
+  /* Texto — blanco azulado frío (como las aletas del pez) */
+  --color-text:         #D4E8F0;    /* Texto principal: blanco azulado */
+  --color-text-muted:   #7AAFC0;    /* Texto secundario: teal desaturado */
+  --color-text-faint:   rgba(141, 212, 232, 0.35);  /* Texto muy tenue */
+
+  /* Bordes — basados en el teal del acento */
+  --color-border:       rgba(62, 198, 216, 0.22);
+  --color-border-glow:  rgba(62, 198, 216, 0.5);
+
+  /* ── TIPOGRAFÍA ────────────────────────────────── */
+  --font-display:  'Cinzel Decorative', 'Palatino Linotype', serif;
+  --font-body:     'IM Fell English', 'Georgia', serif;
+  --font-mono:     'Rajdhani', 'Courier New', monospace;
+
+  /* Escala tipográfica (usa rem para accesibilidad) */
+  --fs-hero:    clamp(2.5rem, 7vw, 5.5rem);   /* Título hero */
+  --fs-h1:      clamp(2rem, 4vw, 3.5rem);      /* H1 secciones */
+  --fs-h2:      clamp(1.5rem, 3vw, 2.5rem);    /* H2 subsecciones */
+  --fs-h3:      clamp(1.1rem, 2vw, 1.5rem);    /* H3 */
+  --fs-body:    clamp(0.95rem, 1.2vw, 1.1rem); /* Cuerpo */
+  --fs-small:   0.85rem;                        /* Etiquetas pequeñas */
+
+  /* ── ESPACIADO ─────────────────────────────────── */
+  --space-xs:   0.25rem;
+  --space-sm:   0.5rem;
+  --space-md:   1rem;
+  --space-lg:   2rem;
+  --space-xl:   4rem;
+  --space-2xl:  6rem;
+
+  /* ── GEOMETRÍA ─────────────────────────────────── */
+  --sidebar-left-w:  220px;  /* 📝 EDITAR: ancho sidebar izquierdo */
+  --sidebar-right-w: 200px;  /* 📝 EDITAR: ancho sidebar derecho */
+  --border-radius:   4px;
+  --border-radius-lg: 8px;
+
+  /* ── TRANSICIONES ──────────────────────────────── */
+  --transition-fast:   150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-med:    300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow:   600ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ── SOMBRAS ────────────────────────────────────── */
+  --shadow-glow-accent: 0 0 20px rgba(62, 198, 216, 0.3),
+                         0 0 60px rgba(62, 198, 216, 0.1);
+  --shadow-glow-ocean:  0 0 20px rgba(141, 212, 232, 0.3),
+                         0 0 40px rgba(141, 212, 232, 0.1);
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   2. RESET Y BASE
+   Box-sizing universal, márgenes cero, base de fuente.
+   ══════════════════════════════════════════════════════════════ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;          /* Base para calcular rem */
+  scroll-behavior: smooth;  /* Scroll suave para los anchor links */
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  min-height: 100vh;
+  overflow-x: hidden; /* Sin scroll horizontal */
+  /* El scroll vertical lo maneja #main-content, no el body */
+  cursor: none; /* Cursor nativo oculto; usamos el cursor CSS personalizado */
+}
+
+/* Restaurar cursor nativo para elementos interactivos
+   (el cursor.js lo sobreescribe de todas formas) */
+a, button, input, select, textarea {
+  cursor: none;
+}
+
+/* Links base */
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+a:hover { color: var(--color-ocean); }
+a:focus-visible {
+  /* Accesibilidad: indicador de foco visible para teclado */
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Imágenes responsivas por defecto */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Listas sin estilo por defecto (cada componente añade el suyo) */
+ul, ol { list-style: none; }
+
+/* Selección de texto con colores del tema */
+::selection {
+  background: var(--color-accent-dim);
+  color: var(--color-text);
+}
+
+/* Scrollbar personalizada (Chrome/Edge/Safari) */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb {
+  background: var(--color-accent-dim);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--color-accent); }
+
+
+/* ══════════════════════════════════════════════════════════════
+   3. FONDO Y EFECTOS GLOBALES
+   ══════════════════════════════════════════════════════════════ */
+
+/* Canvas de Three.js — fijo, z-index más bajo que todo */
+#bg-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;         /* Detrás de todo */
+  pointer-events: none; /* No intercepta clicks */
+}
+
+/* Overlay de ruido analógico / grain
+   Técnica: SVG inline en base64 como background-image.
+   Crea textura granular sin necesidad de imagen externa. */
+.noise {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.035; /* 📝 EDITAR: sube/baja la intensidad del grano (0.01–0.1) */
+  /* Patrón SVG generado inline como URI */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 150px 150px;
+  animation: noiseShift 8s steps(2) infinite;
+}
+
+/* Velo de degradado global sobre el canvas 3D */
+#app {
+  position: relative;
+  z-index: 2; /* Por encima del canvas y el noise */
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   4. LAYOUT PRINCIPAL (#app)
+   Tres columnas: sidebar-left | main | sidebar-right
+   Inspiración: portales web 90s/2000s (GeoCities, portal style)
+   ══════════════════════════════════════════════════════════════ */
+#app {
+  display: grid;
+  grid-template-columns: var(--sidebar-left-w) 1fr var(--sidebar-right-w);
+  grid-template-rows: 100vh;
+  grid-template-areas: "sidebar-left main sidebar-right";
+  height: 100vh;
+  overflow: hidden; /* El scroll lo hace cada columna por separado */
+}
+
+/* ── ZONAS DEL GRID ──────────────────────────── */
+#sidebar-left    { grid-area: sidebar-left; }
+#main-content    { grid-area: main; }
+#sidebar-right   { grid-area: sidebar-right; }
+
+
+/* ══════════════════════════════════════════════════════════════
+   5. SIDEBAR IZQUIERDO
+   Navegación vertical estilo 90s con efecto de panel arcano.
+   ══════════════════════════════════════════════════════════════ */
+#sidebar-left {
+  position: relative;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: linear-gradient(
+    180deg,
+    rgba(10, 8, 30, 0.97) 0%,
+    rgba(20, 10, 50, 0.95) 50%,
+    rgba(8, 5, 25, 0.97) 100%
+  );
+  /* Borde derecho con brillo */
+  border-right: 1px solid var(--color-border);
+  box-shadow: inset -10px 0 30px rgba(62, 198, 216, 0.05),
+              4px 0 20px rgba(0, 0, 0, 0.5);
+  padding: var(--space-lg) var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* ── Marca / Logo en el sidebar ── */
+.sidebar-brand {
+  text-align: center;
+  padding-bottom: var(--space-md);
+}
+
+/* El sigil grande del artista en la cabecera del nav */
+.sigil {
+  font-size: 2.5rem;
+  color: var(--color-accent);
+  /* Animación de pulso leve */
+  animation: sigilPulse 4s ease-in-out infinite;
+  display: block;
+  text-shadow: 0 0 20px var(--color-accent),
+               0 0 40px var(--color-accent-dim);
+}
+
+.brand-name {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  display: block;
+  margin-top: var(--space-xs);
+}
+
+/* Divisor decorativo */
+.sidebar-divider {
+  text-align: center;
+  color: var(--color-text-faint);
+  font-size: var(--fs-small);
+  letter-spacing: 0.2em;
+}
+
+/* ── Lista de navegación ── */
+.nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  flex: 1;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 0.6rem var(--space-sm);
+  border-radius: var(--border-radius);
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: all var(--transition-med);
+  border: 1px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Efecto de barrido de luz al hacer hover
+   Técnica: ::before con gradiente que se desliza con transform */
+.nav-link::before {
+  content: '';
+  position: absolute;
+  left: -100%;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(62,198,216,0.1), transparent);
+  transition: left var(--transition-med);
+}
+.nav-link:hover::before { left: 100%; }
+
+.nav-link:hover,
+.nav-item.active .nav-link {
+  color: var(--color-text);
+  background: rgba(62, 198, 216, 0.1);
+  border-color: var(--color-border);
+  box-shadow: 0 0 15px rgba(62, 198, 216, 0.1);
+}
+
+/* Item activo con el acento resaltado */
+.nav-item.active .nav-link {
+  color: var(--color-accent);
+  border-color: var(--color-accent-dim);
+  box-shadow: var(--shadow-glow-accent);
+}
+
+.nav-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+  min-width: 1.2rem;
+  text-align: center;
+}
+
+.nav-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+}
+
+/* ── Rueda zodiacal inferior del sidebar ── */
+.sidebar-footer {
+  padding-top: var(--space-md);
+  display: flex;
+  justify-content: center;
+  /* Borde superior tenue */
+  border-top: 1px solid var(--color-border);
+}
+
+.zodiac-wheel { width: 80px; height: 80px; }
+
+/* Rotación continua de la rueda zodiacal */
+.zodiac-svg {
+  animation: zodiacRotate 60s linear infinite;
+  /* 60 segundos = una vuelta completa muy lenta, hipnótica */
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   6. MAIN CONTENT
+   Scroll vertical. Cada sección tiene min-height: 100vh.
+   ══════════════════════════════════════════════════════════════ */
+#main-content {
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-snap-type: y mandatory; /* Snap entre secciones */
+  /* Fondo semi-transparente para que se vea el canvas 3D detrás */
+  background: linear-gradient(
+    180deg,
+    rgba(8, 8, 26, 0.7) 0%,
+    rgba(11, 11, 35, 0.75) 100%
+  );
+}
+
+/* ── Secciones base ── */
+.section {
+  min-height: 100vh;
+  padding: var(--space-xl) var(--space-2xl);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  /* Scroll snap: cada sección se alinea al centro del viewport */
+  scroll-snap-align: start;
+  /* Borde inferior tenue entre secciones */
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Efecto de fondo alterno en secciones pares
+   Crea el ritmo visual entre secciones */
+.section:nth-child(even) {
+  background: linear-gradient(
+    135deg,
+    rgba(15, 12, 40, 0.4) 0%,
+    rgba(10, 18, 50, 0.3) 100%
+  );
+}
+
+/* ── Encabezado de sección (compartido) ── */
+.section-header {
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+  position: relative;
+}
+
+.section-rune {
+  display: block;
+  font-size: 1.5rem;
+  color: var(--color-accent);
+  margin-bottom: var(--space-sm);
+  animation: sigilPulse 3s ease-in-out infinite;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: var(--fs-h1);
+  color: var(--color-text);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  /* Gradiente en el texto del título de sección */
+  background: linear-gradient(135deg, var(--color-text) 0%, var(--color-accent) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.section-subtitle {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  color: var(--color-text-muted);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-top: var(--space-xs);
+}
+
+/* Línea decorativa debajo del título de sección */
+.section-header::after {
+  content: '── ✦ ──';
+  display: block;
+  text-align: center;
+  color: var(--color-text-faint);
+  margin-top: var(--space-md);
+  font-size: var(--fs-small);
+  letter-spacing: 0.3em;
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   7. SECCIONES INDIVIDUALES
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── 7.1 HOME / EL UMBRAL ── */
+.section-home {
+  align-items: center;
+  text-align: center;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Círculo de invocación SVG — fondo de la home */
+.invocation-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(70vw, 70vh);
+  height: min(70vw, 70vh);
+  pointer-events: none;
+}
+
+.circle-svg { width: 100%; height: 100%; }
+
+/* Rotación del anillo exterior del círculo de invocación */
+.circle-outer {
+  animation: circleRotate 20s linear infinite;
+  transform-origin: 50% 50%;
+  /* transform-origin funciona con SVG gracias a transform-box */
+  transform-box: fill-box;
+}
+
+/* Pulso del círculo interior */
+.circle-pulse {
+  animation: circlePulse 4s ease-in-out infinite;
+}
+
+/* ── Texto hero ── */
+.hero-text {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: var(--fs-hero);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+/* Efecto glitch en el título hero
+   Técnica: dos pseudo-elementos con el mismo texto (data-text attr)
+   desplazados por keyframes con distintos clip-path y transform */
+.glitch-text {
+  position: relative;
+  display: inline-block;
+  color: var(--color-text);
+  text-shadow: var(--shadow-glow-accent);
+}
+
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);  /* Toma el texto del atributo data-text del HTML */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Canal rojo del glitch */
+.glitch-text::before {
+  color: var(--color-ocean);
+  animation: glitch1 4s steps(2) infinite;
+  clip-path: polygon(0 20%, 100% 20%, 100% 40%, 0 40%);
+}
+
+/* Canal azul/verde del glitch */
+.glitch-text::after {
+  color: var(--color-accent);
+  animation: glitch2 4s steps(2) infinite;
+  animation-delay: 0.1s;
+  clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%);
+}
+
+.hero-subtitle {
+  font-family: var(--font-mono);
+  font-size: clamp(0.8rem, 1.5vw, 1.1rem);
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.hero-quote {
+  font-style: italic;
+  color: var(--color-text-muted);
+  font-size: clamp(0.85rem, 1.3vw, 1rem);
+  max-width: 42ch;
+  line-height: 1.7;
+  border-left: 2px solid var(--color-accent-dim);
+  padding-left: var(--space-md);
+  text-align: left;
+}
+
+/* Botón de entrada a la página */
+.btn-enter {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 0.8rem 2rem;
+  border: 1px solid var(--color-border-glow);
+  border-radius: var(--border-radius);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  transition: all var(--transition-med);
+  position: relative;
+  overflow: hidden;
+  background: transparent;
+}
+
+.btn-enter::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--color-accent-glow);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--transition-med);
+}
+
+.btn-enter:hover::before { transform: scaleX(1); }
+.btn-enter:hover {
+  box-shadow: var(--shadow-glow-accent);
+  border-color: var(--color-accent);
+}
+
+.btn-enter-icon {
+  animation: bounceDown 2s ease-in-out infinite;
+}
+
+/* Indicador de scroll */
+.scroll-indicator {
+  position: absolute;
+  bottom: var(--space-lg);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  opacity: 0.4;
+}
+
+.scroll-line {
+  display: block;
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, transparent, var(--color-accent));
+  animation: scrollLinePulse 2s ease-in-out infinite;
+}
+
+.scroll-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+
+/* ── 7.2 PERFIL ── */
+.section-profile {
+  justify-content: flex-start;
+  padding-top: var(--space-2xl);
+}
+
+/* Layout de dos columnas para el perfil */
+.profile-layout {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: var(--space-2xl);
+  align-items: start;
+}
+
+/* Marco de la foto de perfil */
+.profile-photo-frame {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+}
+
+/* El placeholder SVG que se verá hasta poner foto real */
+.profile-photo-placeholder {
+  width: 100%;
+  aspect-ratio: 3/4;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  background: rgba(20, 15, 50, 0.8);
+  position: relative;
+}
+
+.profile-photo-placeholder svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Marco exterior decorativo (borde con brillo) */
+.photo-frame-outer {
+  position: absolute;
+  inset: -4px;
+  border: 1px solid var(--color-accent-dim);
+  border-radius: calc(var(--border-radius-lg) + 4px);
+  pointer-events: none;
+  box-shadow: var(--shadow-glow-accent);
+}
+
+/* Runas en las esquinas del marco */
+.photo-frame-runes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.rune {
+  position: absolute;
+  font-size: 1rem;
+  color: var(--color-accent);
+  opacity: 0.6;
+  animation: sigilPulse 5s ease-in-out infinite;
+}
+.rune-tl { top: -1rem; left: -0.5rem; }
+.rune-tr { top: -1rem; right: -0.5rem; animation-delay: 1.25s; }
+.rune-bl { bottom: -1rem; left: -0.5rem; animation-delay: 2.5s; }
+.rune-br { bottom: -1rem; right: -0.5rem; animation-delay: 3.75s; }
+
+/* Texto del perfil */
+.profile-name {
+  font-family: var(--font-display);
+  font-size: var(--fs-h2);
+  color: var(--color-text);
+  margin-bottom: var(--space-xs);
+}
+
+.profile-pronoun {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.profile-location {
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  color: var(--color-text-muted);
+  letter-spacing: 0.1em;
+  margin-bottom: var(--space-lg);
+}
+
+/* Carta astral (tres columnas de signos) */
+.astro-chart {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+  padding: var(--space-md);
+  background: rgba(139, 92, 246, 0.05);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+}
+
+.astro-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+  text-align: center;
+}
+
+.astro-icon {
+  font-size: 1.3rem;
+  color: var(--color-gold);
+}
+
+.astro-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.astro-value {
+  font-family: var(--font-body);
+  font-size: var(--fs-small);
+  color: var(--color-text);
+  font-style: italic;
+}
+
+/* Bio */
+.bio-text p {
+  line-height: 1.85;
+  color: var(--color-text);
+  margin-bottom: var(--space-md);
+}
+
+.bio-text p:last-child { margin-bottom: 0; }
+
+
+/* ── 7.3 TRAYECTORIA / LÍNEA DE TIEMPO ── */
+.section-trajectory { padding-top: var(--space-2xl); }
+
+/* Línea de tiempo vertical */
+.timeline {
+  position: relative;
+  max-width: 700px;
+  margin: 0 auto;
+  padding-left: var(--space-xl);
+}
+
+/* La línea central vertical del timeline */
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: calc(var(--space-xl) / 2 - 1px); /* Centrada bajo los dots */
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--color-accent-dim) 10%,
+    var(--color-accent-dim) 90%,
+    transparent
+  );
+}
+
+.timeline-item {
+  position: relative;
+  padding-bottom: var(--space-2xl);
+}
+
+/* Punto del timeline */
+.timeline-dot {
+  position: absolute;
+  left: calc(var(--space-xl) * -1 + (var(--space-xl) / 2));
+  /* Centramos el dot con la línea: left negativo + mitad del espaciado */
+  top: 0;
+  transform: translateX(-50%);
+  width: 36px;
+  height: 36px;
+  background: var(--color-bg-mid);
+  border: 1px solid var(--color-accent-dim);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-med);
+}
+
+.timeline-item.active .timeline-dot {
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-glow-accent);
+  background: rgba(139, 92, 246, 0.15);
+}
+
+.dot-inner {
+  color: var(--color-accent);
+  font-size: 0.9rem;
+}
+
+/* Contenido de cada evento */
+.timeline-content {
+  background: rgba(20, 15, 50, 0.5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  padding: var(--space-lg);
+  transition: all var(--transition-med);
+  /* Inicialmente invisible para animación GSAP */
+  opacity: 0;
+  transform: translateX(-20px);
+}
+
+/* GSAP añade la clase .is-visible cuando el elemento entra en viewport */
+.timeline-content.is-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.timeline-item.active .timeline-content {
+  border-color: var(--color-accent-dim);
+  box-shadow: var(--shadow-glow-accent);
+}
+
+.timeline-date {
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  color: var(--color-accent);
+  letter-spacing: 0.2em;
+  display: block;
+  margin-bottom: var(--space-xs);
+}
+
+.timeline-event {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--color-text);
+  margin-bottom: var(--space-sm);
+}
+
+.timeline-desc {
+  font-size: var(--fs-small);
+  line-height: 1.7;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-sm);
+}
+
+
+/* ── 7.4 PROYECTO / GRIMORIO ── */
+.section-project { padding-top: var(--space-2xl); }
+
+/* Layout de dos "páginas" del grimorio */
+.grimoire-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: var(--space-xl);
+  align-items: center;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Página izquierda: sigil */
+.grimoire-left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.grimoire-sigil-container {
+  position: relative;
+  width: 100%;
+  max-width: 280px;
+}
+
+/* El sigil rota lentamente */
+.grimoire-sigil {
+  width: 100%;
+  height: auto;
+  animation: sigilRotate 30s linear infinite;
+  filter: drop-shadow(0 0 15px rgba(139, 92, 246, 0.4));
+}
+
+/* Página derecha: texto */
+.grimoire-right {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.grimoire-project-title {
+  font-family: var(--font-display);
+  font-size: var(--fs-h2);
+  color: var(--color-text);
+  font-style: italic;
+}
+
+.grimoire-text {
+  line-height: 1.85;
+  color: var(--color-text-muted);
+}
+
+/* Los tres actos del proyecto */
+.project-acts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  background: rgba(139, 92, 246, 0.04);
+}
+
+.act-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+}
+
+.act-num {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--color-accent-dim);
+  min-width: 2rem;
+  line-height: 1.4;
+}
+
+.act-name {
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+
+.act-desc {
+  font-size: var(--fs-small);
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.grimoire-quote {
+  font-style: italic;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.7;
+  border-left: 2px solid var(--color-bio);
+  padding-left: var(--space-md);
+  color: var(--color-bio);
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   8. COMPONENTES GLOBALES
+   ══════════════════════════════════════════════════════════════ */
+
+/* Tags / etiquetas pequeñas */
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  background: rgba(139, 92, 246, 0.05);
+  transition: all var(--transition-fast);
+}
+
+.tag:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+/* Wrapper de tags */
+.timeline-tags,
+.track-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-top: var(--space-xs);
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   9. GALERÍA / PORTAFOLIO
+   ══════════════════════════════════════════════════════════════ */
+.section-portfolio { padding-top: var(--space-2xl); }
+
+/* Filtros de categoría */
+.gallery-filters {
+  display: flex;
+  gap: var(--space-sm);
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: var(--space-xl);
+}
+
+.filter-btn {
+  padding: 0.4rem 1rem;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 2px;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: none; /* usamos cursor personalizado */
+  transition: all var(--transition-fast);
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+  background: var(--color-accent-dim);
+  border-color: var(--color-accent);
+  color: var(--color-text);
+}
+
+/*
+  GALERÍA MASONRY CON CSS COLUMNS
+  Técnica: column-count crea un layout tipo periódico/masonry.
+  Las imágenes se apilan en columnas y el browser las distribuye
+  automáticamente por altura. No necesita JS para el layout básico.
+*/
+.gallery-grid {
+  columns: 3;
+  column-gap: var(--space-md);
+  max-width: 100%;
+}
+
+/* Cada ítem de la galería es un "bloque" de columna */
+.gallery-item {
+  break-inside: avoid; /* Evita que un ítem se corte entre columnas */
+  margin-bottom: var(--space-md);
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border);
+  /* La transición del filtro (opacity/transform) la maneja el JS */
+  transition: transform var(--transition-med),
+              box-shadow var(--transition-med),
+              opacity var(--transition-med);
+}
+
+/* Items de tamaño grande (ocupan visualmente más) */
+.gallery-item--large {
+  /* Técnica: span column hace que el ítem ocupe dos columnas */
+  /* Nota: no funciona con columns, esto es un truco de altura */
+}
+
+/* Efecto al hacer hover en cada item de la galería */
+.gallery-item:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4),
+              var(--shadow-glow-accent);
+  z-index: 2;
+  border-color: var(--color-accent-dim);
+}
+
+.gallery-figure {
+  position: relative;
+  margin: 0;
+}
+
+/* Placeholder decorativo (mientras no hay foto real) */
+.img-placeholder {
+  width: 100%;
+  /* Altura variable según el tamaño del ítem */
+  aspect-ratio: 3/4;
+  background: linear-gradient(
+    135deg,
+    rgba(20, 15, 55, 0.9) 0%,
+    rgba(10, 25, 60, 0.8) 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Items anchos tienen aspecto landscape en el placeholder */
+.gallery-item--wide .img-placeholder {
+  aspect-ratio: 16/9;
+}
+
+/* Items altos tienen aspecto más portrait */
+.gallery-item--tall .img-placeholder {
+  aspect-ratio: 2/3;
+}
+
+.placeholder-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  text-align: center;
+  padding: var(--space-md);
+}
+
+.placeholder-icon { font-size: 2rem; }
+
+.placeholder-text {
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  color: var(--color-text-muted);
+  letter-spacing: 0.1em;
+}
+
+.placeholder-size {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--color-text-faint);
+}
+
+/* Caption de la foto */
+.gallery-caption {
+  padding: var(--space-sm) var(--space-md);
+  background: rgba(8, 8, 26, 0.9);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.caption-title {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  letter-spacing: 0.1em;
+}
+
+.caption-cat {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--color-accent);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* Overlay de hover con botón de zoom */
+.gallery-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 8, 26, 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition-med);
+  pointer-events: none;
+}
+
+.gallery-item:hover .gallery-overlay {
+  background: rgba(8, 8, 26, 0.5);
+  pointer-events: auto;
+}
+
+.overlay-zoom {
+  font-size: 2rem;
+  color: var(--color-text);
+  opacity: 0;
+  transform: scale(0.5);
+  transition: all var(--transition-med);
+}
+
+.gallery-item:hover .overlay-zoom {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ── LIGHTBOX ──
+   Capa de pantalla completa para ver foto ampliada.
+   El JS lo crea e inserta dinámicamente.
+   Estilos aquí para cuando aparezca. */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(5, 5, 20, 0.96);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Empieza invisible; JS añade .is-open */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-med);
+}
+
+.lightbox.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.lightbox-inner {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+}
+
+.lightbox-inner img {
+  max-height: 85vh;
+  max-width: 85vw;
+  object-fit: contain;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-glow-accent);
+  /* Efecto de perspectiva 3D al entrar */
+  transform: perspective(1000px) rotateY(0deg);
+  transition: transform var(--transition-slow);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: -2rem;
+  right: 0;
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 1.5rem;
+  cursor: none;
+  transition: color var(--transition-fast);
+}
+.lightbox-close:hover { color: var(--color-accent); }
+
+
+/* ══════════════════════════════════════════════════════════════
+   10. TRACKS / MÚSICA
+   ══════════════════════════════════════════════════════════════ */
+.section-music { padding-top: var(--space-2xl); }
+
+.tracks-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Card de cada track */
+.track-card {
+  display: grid;
+  /* Número | Info | Waveform | Controles */
+  grid-template-columns: 50px 1fr 200px auto;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  background: rgba(20, 15, 50, 0.5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  transition: all var(--transition-med);
+  /* También empieza invisible para animación GSAP */
+  opacity: 0;
+  transform: translateX(-15px);
+}
+
+.track-card.is-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.track-card:hover {
+  border-color: var(--color-accent-dim);
+  background: rgba(30, 20, 70, 0.6);
+  box-shadow: var(--shadow-glow-accent);
+}
+
+.track-card.is-playing {
+  border-color: var(--color-ocean);
+  box-shadow: var(--shadow-glow-ocean);
+}
+
+.track-number {
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  color: var(--color-text-faint);
+  text-align: center;
+  font-weight: 300;
+}
+
+.track-card.is-playing .track-number {
+  color: var(--color-ocean);
+  text-shadow: 0 0 10px var(--color-ocean);
+}
+
+.track-title {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--color-text);
+  margin-bottom: 2px;
+}
+
+.track-meta {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.track-duration {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.track-year {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--color-text-faint);
+  letter-spacing: 0.1em;
+}
+
+/* Canvas del visualizador de onda del track
+   JS dibuja ondas pseudoaleatorias animadas aquí */
+.track-waveform {
+  opacity: 0.5;
+  filter: drop-shadow(0 0 3px var(--color-accent));
+  transition: opacity var(--transition-fast);
+}
+
+.track-card:hover .track-waveform,
+.track-card.is-playing .track-waveform {
+  opacity: 1;
+}
+
+/* Controles del track */
+.track-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+}
+
+/* Botón play/pause */
+.btn-play {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background: rgba(139, 92, 246, 0.1);
+  color: var(--color-text);
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: none;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.btn-play:hover {
+  background: var(--color-accent-dim);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 15px var(--color-accent-dim);
+}
+
+.btn-play.is-playing { background: var(--color-ocean-dim); border-color: var(--color-ocean); }
+
+/* Link externo a plataforma */
+.track-link-external {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+  padding: 0.3rem 0.6rem;
+  border-radius: 2px;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.track-link-external:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+  background: var(--color-accent-glow);
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   11. CONTACTO
+   ══════════════════════════════════════════════════════════════ */
+.section-contact { padding-top: var(--space-2xl); }
+
+.contact-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: var(--space-2xl);
+  align-items: start;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Panel de redes */
+.contact-social-title,
+.contact-form-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-lg);
+}
+
+.social-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  transition: all var(--transition-fast);
+  color: var(--color-text-muted);
+}
+
+.social-link:hover {
+  background: var(--color-accent-glow);
+  border-color: var(--color-accent-dim);
+  color: var(--color-text);
+  transform: translateX(4px);
+}
+
+.social-icon {
+  font-size: 1rem;
+  color: var(--color-accent);
+  min-width: 1.2rem;
+}
+
+.social-platform {
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  letter-spacing: 0.1em;
+  flex: 1;
+}
+
+.social-handle {
+  font-size: 0.7rem;
+  color: var(--color-text-faint);
+}
+
+.contact-email {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  color: var(--color-ocean);
+  letter-spacing: 0.1em;
+  padding: var(--space-sm);
+  border-top: 1px solid var(--color-border);
+}
+
+/* Formulario */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.form-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* Estilos base de inputs */
+.form-input,
+.form-select,
+.form-textarea {
+  background: rgba(20, 15, 50, 0.7);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--fs-small);
+  padding: 0.7rem var(--space-md);
+  transition: all var(--transition-fast);
+  outline: none;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px var(--color-accent-glow);
+  background: rgba(30, 22, 65, 0.8);
+}
+
+.form-textarea { resize: vertical; min-height: 120px; }
+
+.form-select {
+  /* Select: el estilo de la flecha depende del OS/browser */
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(180,140,255,0.5)'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 8px;
+  padding-right: 2rem;
+}
+
+.form-select option {
+  background: var(--color-bg-mid);
+  color: var(--color-text);
+}
+
+/* Botón de envío */
+.btn-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  justify-content: center;
+  padding: 0.8rem var(--space-xl);
+  background: var(--color-accent-dim);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--border-radius);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: none;
+  transition: all var(--transition-med);
+}
+
+.btn-submit:hover {
+  background: var(--color-accent);
+  box-shadow: var(--shadow-glow-accent);
+  transform: translateY(-1px);
+}
+
+.btn-submit-icon {
+  font-size: 1rem;
+  animation: sigilPulse 2s ease-in-out infinite;
+}
+
+.form-status {
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  padding: var(--space-sm);
+  border-radius: var(--border-radius);
+  text-align: center;
+}
+
+.form-status.success {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid var(--color-bio);
+  color: var(--color-bio);
+}
+
+.form-status.error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid #ef4444;
+  color: #ef4444;
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   12. SIDEBAR DERECHO
+   Panel de datos astrológicos y esoterismo.
+   ══════════════════════════════════════════════════════════════ */
+#sidebar-right {
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: linear-gradient(
+    180deg,
+    rgba(8, 5, 25, 0.97) 0%,
+    rgba(12, 8, 35, 0.95) 100%
+  );
+  border-left: 1px solid var(--color-border);
+  box-shadow: inset 10px 0 30px rgba(34, 211, 238, 0.03),
+              -4px 0 20px rgba(0, 0, 0, 0.5);
+  padding: var(--space-lg) var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* Cabecera del sidebar derecho */
+.sidebar-right-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.sr-icon {
+  font-size: 1.1rem;
+  color: var(--color-gold);
+}
+
+.sr-title {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* Divisor */
+.sr-divider {
+  text-align: center;
+  color: var(--color-text-faint);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+}
+
+/* Widget de luna */
+.moon-widget {
+  text-align: center;
+  padding: var(--space-sm);
+}
+
+.moon-visual { display: flex; justify-content: center; }
+
+.moon-svg {
+  width: 64px;
+  height: 64px;
+  filter: drop-shadow(0 0 8px rgba(255, 250, 200, 0.3));
+  animation: moonGlow 4s ease-in-out infinite;
+}
+
+.moon-label {
+  font-family: var(--font-body);
+  font-size: var(--fs-small);
+  color: var(--color-gold);
+  font-style: italic;
+  margin-top: var(--space-xs);
+}
+
+.moon-date {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+  letter-spacing: 0.1em;
+  margin-top: 2px;
+}
+
+/* Widget de planetas en tránsito */
+.transit-title,
+.tarot-title {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+  margin-bottom: var(--space-sm);
+}
+
+.transit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.transit-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 4px var(--space-sm);
+  border-radius: 2px;
+  transition: background var(--transition-fast);
+}
+
+.transit-item:hover { background: rgba(139, 92, 246, 0.05); }
+
+.t-planet {
+  font-size: 0.9rem;
+  color: var(--color-gold);
+  min-width: 1.2rem;
+  text-align: center;
+}
+
+.t-sign {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+/* Widget del tarot */
+.tarot-card {
+  perspective: 600px; /* Perspectiva para el efecto 3D de volteo */
+  width: 80px;
+  height: 120px;
+  margin: 0 auto var(--space-sm);
+}
+
+.tarot-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  /* transform-style: preserve-3d hace que los hijos tengan espacio 3D */
+  transform-style: preserve-3d;
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Al hacer hover, la carta gira 180° mostrando el reverso */
+.tarot-card:hover .tarot-card-inner {
+  transform: rotateY(180deg);
+}
+
+.tarot-front,
+.tarot-back {
+  position: absolute;
+  inset: 0;
+  /* backface-visibility: hidden oculta la cara cuando está de espaldas */
+  backface-visibility: hidden;
+  border-radius: 4px;
+  border: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.tarot-front {
+  background: linear-gradient(135deg, rgba(20,15,55,0.95), rgba(40,20,80,0.9));
+}
+
+.tarot-back {
+  background: linear-gradient(135deg, rgba(10,30,60,0.95), rgba(20,50,80,0.9));
+  transform: rotateY(180deg); /* Ya girada para que se vea bien al voltear */
+  font-size: 2rem;
+  color: var(--color-ocean);
+}
+
+.tarot-numeral {
+  font-family: var(--font-display);
+  font-size: 0.55rem;
+  color: var(--color-text-faint);
+  letter-spacing: 0.2em;
+}
+
+.tarot-symbol { font-size: 1.5rem; }
+
+.tarot-name {
+  font-family: var(--font-body);
+  font-size: 0.55rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+  text-align: center;
+  line-height: 1.3;
+  padding: 0 4px;
+}
+
+.tarot-back-symbol {
+  font-size: 2rem;
+  color: var(--color-ocean);
+  text-shadow: 0 0 10px var(--color-ocean);
+}
+
+.tarot-desc {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* Widget de cita rotatoria */
+.quote-widget {
+  padding: var(--space-sm);
+  border-top: 1px solid var(--color-border);
+  margin-top: auto; /* Empuja al fondo del sidebar */
+}
+
+.rotating-quote {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-style: italic;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  text-align: center;
+  transition: opacity var(--transition-slow);
+}
+
+.quote-author {
+  display: block;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--color-text-faint);
+  margin-top: var(--space-xs);
+  letter-spacing: 0.1em;
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   12. FOOTER
+   ══════════════════════════════════════════════════════════════ */
+.site-footer {
+  padding: var(--space-xl) var(--space-2xl);
+  text-align: center;
+  border-top: 1px solid var(--color-border);
+  background: rgba(5, 5, 18, 0.8);
+}
+
+.footer-copy {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  letter-spacing: 0.15em;
+  margin-bottom: var(--space-xs);
+}
+
+.footer-made {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  color: var(--color-text-faint);
+  font-style: italic;
+  margin-bottom: var(--space-sm);
+}
+
+.footer-symbols {
+  font-size: 0.9rem;
+  color: var(--color-accent-dim);
+  letter-spacing: 0.5em;
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   13. CURSOR PERSONALIZADO
+   Un punto/estrella que sigue al mouse con retraso (lerp en JS).
+   ══════════════════════════════════════════════════════════════ */
+.cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  pointer-events: none;  /* No bloquea clicks */
+  font-size: 1rem;
+  color: var(--color-accent);
+  transform: translate(-50%, -50%);
+  transition: opacity var(--transition-fast);
+  text-shadow: 0 0 8px var(--color-accent);
+  /* El movimiento lo actualiza JS directamente con style.left/top
+     para evitar lag. El transform es solo para centrar. */
+}
+
+/* Estela del cursor: un círculo que sigue más lento */
+.cursor-trail {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9998;
+  pointer-events: none;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--color-accent-dim);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  /* Esta transición crea el efecto de "retraso" de la estela */
+  transition: left 0.08s linear, top 0.08s linear, opacity var(--transition-fast);
+}
+
+/* Estado hover del cursor (cuando está sobre link/button) */
+body.cursor-hover .cursor {
+  transform: translate(-50%, -50%) scale(1.8);
+  color: var(--color-ocean);
+}
+
+body.cursor-hover .cursor-trail {
+  transform: translate(-50%, -50%) scale(1.5);
+  border-color: var(--color-ocean-dim);
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   14. ANIMACIONES (@keyframes)
+   Todos los keyframes en un solo lugar para fácil edición.
+   ══════════════════════════════════════════════════════════════ */
+
+/* Pulso del sigil / elementos mágicos */
+@keyframes sigilPulse {
+  0%, 100% { opacity: 0.7; text-shadow: 0 0 10px currentColor; }
+  50%       { opacity: 1;   text-shadow: 0 0 25px currentColor, 0 0 50px currentColor; }
+}
+
+/* Rotación lenta de la rueda zodiacal */
+@keyframes zodiacRotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Rotación del sigil del grimorio (en sentido inverso para variedad) */
+@keyframes sigilRotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(-360deg); }
+}
+
+/* Rotación del círculo de invocación (hero) */
+@keyframes circleRotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Pulso del círculo interior (hero) */
+@keyframes circlePulse {
+  0%, 100% { stroke-opacity: 0.15; r: 148; }  /* r es el radio del SVG */
+  50%       { stroke-opacity: 0.35; r: 155; }
+}
+
+/* Glitch canal 1 (rojo/cyan) */
+@keyframes glitch1 {
+  0%   { transform: translate(0); clip-path: polygon(0 20%, 100% 20%, 100% 40%, 0 40%); }
+  20%  { transform: translate(-3px, 2px); clip-path: polygon(0 50%, 100% 50%, 100% 65%, 0 65%); }
+  40%  { transform: translate(3px, -2px); clip-path: polygon(0 10%, 100% 10%, 100% 25%, 0 25%); }
+  60%  { transform: translate(0); clip-path: polygon(0 70%, 100% 70%, 100% 85%, 0 85%); }
+  80%  { transform: translate(-2px, 1px); clip-path: polygon(0 30%, 100% 30%, 100% 45%, 0 45%); }
+  100% { transform: translate(0); clip-path: polygon(0 20%, 100% 20%, 100% 40%, 0 40%); }
+}
+
+/* Glitch canal 2 (azul/morado) */
+@keyframes glitch2 {
+  0%   { transform: translate(0); clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%); }
+  25%  { transform: translate(4px, -2px); clip-path: polygon(0 15%, 100% 15%, 100% 35%, 0 35%); }
+  50%  { transform: translate(-2px, 3px); clip-path: polygon(0 75%, 100% 75%, 100% 90%, 0 90%); }
+  75%  { transform: translate(2px, 0); clip-path: polygon(0 45%, 100% 45%, 100% 60%, 0 60%); }
+  100% { transform: translate(0); clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%); }
+}
+
+/* Rebote del icono del botón "Descender" */
+@keyframes bounceDown {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(6px); }
+}
+
+/* Pulso de la línea del indicador de scroll */
+@keyframes scrollLinePulse {
+  0%, 100% { opacity: 0.3; height: 30px; }
+  50%       { opacity: 0.8; height: 50px; }
+}
+
+/* Brillo de la luna */
+@keyframes moonGlow {
+  0%, 100% { filter: drop-shadow(0 0 6px rgba(255,250,200,0.3)); }
+  50%       { filter: drop-shadow(0 0 14px rgba(255,250,200,0.6)); }
+}
+
+/* Ruido / grain en movimiento (muy sutil) */
+@keyframes noiseShift {
+  0%   { background-position: 0 0; }
+  25%  { background-position: 15px 10px; }
+  50%  { background-position: -10px 20px; }
+  75%  { background-position: 20px -5px; }
+  100% { background-position: 0 0; }
+}
+
+/* Fade in genérico (usado por GSAP como estado de llegada) */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   15. RESPONSIVE
+   El layout de 3 columnas colapsa en pantallas menores.
+   En móvil: sidebar se convierte en barra superior/inferior.
+   ══════════════════════════════════════════════════════════════
+   📝 EDITAR: Ajusta los breakpoints y comportamientos según necesites.
+*/
+
+/* Tablet: sidebar derecho se oculta */
+@media (max-width: 1200px) {
+  :root {
+    --sidebar-right-w: 0px;
+    --sidebar-left-w: 200px;
+  }
+
+  #sidebar-right { display: none; }
+
+  #app {
+    grid-template-columns: var(--sidebar-left-w) 1fr;
+    grid-template-areas: "sidebar-left main";
+  }
+
+  .gallery-grid { columns: 2; }
+}
+
+/* Tablet pequeña: sidebar izquierdo colapsa a barra de iconos */
+@media (max-width: 900px) {
+  :root { --sidebar-left-w: 60px; }
+
+  .brand-name,
+  .nav-label,
+  .sidebar-divider,
+  .sidebar-footer { display: none; }
+
+  .sigil { font-size: 1.5rem; }
+
+  .nav-link {
+    justify-content: center;
+    padding: 0.7rem;
+  }
+
+  .nav-icon {
+    font-size: 1.1rem;
+    min-width: unset;
+  }
+
+  .profile-layout { grid-template-columns: 1fr; }
+  .grimoire-layout { grid-template-columns: 1fr; }
+  .contact-layout { grid-template-columns: 1fr; }
+
+  .track-card {
+    grid-template-columns: 40px 1fr auto;
+  }
+  .track-waveform { display: none; }
+}
+
+/* Móvil: layout completamente vertical */
+@media (max-width: 600px) {
+  #app {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "main"
+      "sidebar-left";
+    grid-template-rows: 1fr auto;
+    height: 100vh;
+  }
+
+  #sidebar-left {
+    height: auto;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: var(--space-sm) var(--space-md);
+    border-right: none;
+    border-top: 1px solid var(--color-border);
+    /* El sidebar izquierdo se vuelve barra inferior en móvil */
+  }
+
+  .nav-list { flex-direction: row; gap: var(--space-xs); }
+
+  .section {
+    padding: var(--space-xl) var(--space-md);
+    min-height: auto;
+    scroll-snap-align: none;
+  }
+
+  .gallery-grid { columns: 1; }
+
+  .track-card { grid-template-columns: 1fr auto; }
+  .track-number { display: none; }
+
+  body { cursor: auto; } /* Restaurar cursor nativo en móvil */
+  .cursor, .cursor-trail { display: none; }
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   16. EMBEDS DE SOUNDCLOUD
+   Estilos para el reproductor principal y los tracks individuales
+   con iframe de SoundCloud.
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Reproductor principal (modo visual grande) ── */
+.soundcloud-main-player {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto var(--space-2xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+/* Etiqueta superior del player */
+.sc-player-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.sc-icon {
+  color: var(--color-ocean);
+  font-size: 1rem;
+}
+
+/*
+  El iframe principal de SoundCloud (modo visual=true).
+  SoundCloud recomienda height=300 para el modo visual.
+  Usamos un wrapper con padding-bottom para que sea responsivo.
+  Técnica: padding-bottom % en el padre + position:absolute en el hijo
+  hace que el iframe mantenga su aspect ratio.
+*/
+.sc-main-iframe {
+  width: 100%;
+  height: 300px;       /* Altura fija para el modo visual de SC */
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  /* Añadir brillo sutil alrededor del reproductor */
+  box-shadow: 0 0 30px rgba(139, 92, 246, 0.15),
+              0 0 60px rgba(34, 211, 238, 0.05);
+  transition: box-shadow var(--transition-med);
+  background: var(--color-bg-surface);
+}
+
+.sc-main-iframe:hover {
+  box-shadow: 0 0 40px rgba(139, 92, 246, 0.25),
+              0 0 80px rgba(34, 211, 238, 0.1);
+}
+
+/* Nota placeholder que se oculta cuando hay embed real */
+.sc-placeholder-note {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--color-text-faint);
+  text-align: center;
+  padding: var(--space-sm);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--border-radius);
+  /* Cuando el embed funcione, puedes borrar este elemento del HTML */
+}
+
+.sc-placeholder-note a {
+  color: var(--color-ocean);
+}
+
+/* Link al perfil externo */
+.sc-profile-link {
+  text-align: right;
+}
+
+
+/* ── Track cards con embed de SoundCloud ── */
+
+/*
+  El nuevo layout de track con embed:
+  columna izquierda: info del track
+  columna derecha: iframe de SoundCloud (barra compacta)
+
+  SoundCloud recomienda height=166 para el modo compacto (visual=false).
+*/
+.track-card--embed {
+  display: grid;
+  grid-template-columns: 220px 1fr;  /* Info | Embed */
+  gap: var(--space-lg);
+  align-items: center;
+  padding: var(--space-md) var(--space-lg);
+  background: rgba(20, 15, 50, 0.5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  transition: all var(--transition-med);
+  margin-bottom: var(--space-md);
+}
+
+.track-card--embed:hover {
+  border-color: var(--color-accent-dim);
+  background: rgba(30, 20, 70, 0.6);
+  box-shadow: var(--shadow-glow-accent);
+}
+
+/* Contenedor del iframe de track individual */
+.track-sc-embed {
+  width: 100%;
+}
+
+/*
+  Iframe de SoundCloud en modo compacto (barra horizontal).
+  height=166 es el estándar de SoundCloud para este modo.
+  Si usas visual=false y show_artwork=true, queda como barra con portada.
+*/
+.sc-track-iframe {
+  width: 100%;
+  height: 166px;
+  border: none;
+  border-radius: var(--border-radius);
+  background: var(--color-bg-surface);
+}
+
+/* ── Responsive para embeds ── */
+@media (max-width: 900px) {
+  .track-card--embed {
+    grid-template-columns: 1fr;  /* Stack vertical en tablet */
+  }
+
+  .sc-main-iframe {
+    height: 250px;
+  }
+}
+
+@media (max-width: 600px) {
+  .sc-main-iframe {
+    height: 200px;
+  }
+
+  .sc-track-iframe {
+    height: 140px;
+  }
+}
+
+
+/* ── Ítem especial del nav: Creador Musical ── */
+.nav-item--special {
+  margin-top: var(--space-sm);
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-sm);
+}
+
+.nav-link--studio {
+  background: rgba(34, 211, 238, 0.06) !important;
+  border-color: rgba(34, 211, 238, 0.3) !important;
+  color: var(--color-ocean) !important;
+  animation: studioPulse 3s ease-in-out infinite;
+}
+
+.nav-link--studio:hover {
+  background: rgba(34, 211, 238, 0.15) !important;
+  box-shadow: 0 0 20px rgba(34, 211, 238, 0.2) !important;
+}
+
+@keyframes studioPulse {
+  0%, 100% { border-color: rgba(34, 211, 238, 0.2); }
+  50%       { border-color: rgba(34, 211, 238, 0.5); }
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   18. SECCIÓN PORTAL — CREADOR MUSICAL
+   Sección en index.html que enlaza a studio.html
+   ══════════════════════════════════════════════════════════════ */
+.section-studio-portal {
+  padding-top: var(--space-2xl);
+  /* Fondo especial para distinguirla de las otras secciones */
+  background: linear-gradient(
+    135deg,
+    rgba(8,  15, 40, 0.6) 0%,
+    rgba(15, 10, 45, 0.5) 100%
+  );
+}
+
+/* Layout de dos columnas: texto | preview */
+.studio-portal-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2xl);
+  align-items: center;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ── Columna de texto ── */
+.studio-portal-heading {
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  color: var(--color-text);
+  margin-bottom: var(--space-md);
+  letter-spacing: 0.05em;
+}
+
+.studio-portal-desc {
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  color: var(--color-text-muted);
+  line-height: 1.8;
+  margin-bottom: var(--space-lg);
+}
+
+/* Lista de características */
+.studio-portal-features {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xl);
+}
+
+.studio-portal-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  font-size: var(--fs-small);
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.spf-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  width: 1.5rem;
+}
+
+.studio-portal-features li strong {
+  color: var(--color-text);
+}
+
+/* Botón de entrada al studio */
+.btn-enter-studio {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 0.9rem 2.2rem;
+  background: linear-gradient(135deg, rgba(139,92,246,0.2), rgba(34,211,238,0.15));
+  border: 1px solid var(--color-ocean);
+  border-radius: var(--border-radius);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: all var(--transition-med);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-enter-studio::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(139,92,246,0.15), rgba(34,211,238,0.1));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--transition-med);
+}
+
+.btn-enter-studio:hover::before { transform: scaleX(1); }
+
+.btn-enter-studio:hover {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 30px rgba(34,211,238,0.2),
+              0 0 60px rgba(139,92,246,0.1);
+  color: var(--color-text);
+}
+
+.btn-es-icon {
+  color: var(--color-ocean);
+  animation: sigilPulse 2s ease-in-out infinite;
+}
+
+.btn-es-arrow {
+  color: var(--color-ocean);
+  transition: transform var(--transition-fast);
+}
+
+.btn-enter-studio:hover .btn-es-arrow {
+  transform: translateX(4px);
+}
+
+.studio-portal-note {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--color-text-faint);
+  letter-spacing: 0.15em;
+  margin-top: var(--space-sm);
+}
+
+/* ── Columna de preview (miniatura animada) ── */
+.studio-portal-preview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: rgba(10, 8, 30, 0.7);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-glow-accent);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Mini-secuenciador decorativo */
+.preview-sequencer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+  padding-bottom: 4px;
+}
+
+.preview-seq-row {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 3px;
+}
+
+.preview-step {
+  aspect-ratio: 1;
+  border-radius: 2px;
+  border: 1px solid rgba(139,92,246,0.15);
+  background: rgba(20,15,50,0.8);
+  transition: all 0.15s;
+}
+
+/* Paso activo en el preview */
+.preview-step.on {
+  background: color-mix(in srgb, var(--sc, #6b21a8) 70%, transparent);
+  border-color: var(--sc, #6b21a8);
+  box-shadow: 0 0 5px var(--sc, #6b21a8);
+}
+
+/* Cursor animado que avanza en el preview — puro CSS */
+.preview-cursor {
+  position: absolute;
+  top: 0;
+  bottom: 4px;
+  width: calc(12.5% - 3px); /* 1/8 de ancho - gap */
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 2px;
+  animation: previewCursorMove 2s steps(8) infinite;
+}
+
+@keyframes previewCursorMove {
+  from { left: 0; }
+  to   { left: 100%; }
+}
+
+/* Mini-teclas del piano en el preview */
+.preview-piano {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 4px;
+}
+
+.preview-key {
+  aspect-ratio: 1/1.5;
+  border-radius: 4px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  color: rgba(255,255,255,0.7);
+  font-weight: 700;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--kc, #6b21a8) 50%, black),
+    color-mix(in srgb, var(--kc, #6b21a8) 30%, black)
+  );
+  border: 1px solid color-mix(in srgb, var(--kc, #6b21a8) 60%, transparent);
+  transition: all 0.2s;
+  animation: previewKeyGlow 4s ease-in-out infinite;
+  animation-delay: calc(var(--ki, 0) * 0.5s);
+}
+
+@keyframes previewKeyGlow {
+  0%, 80%, 100% { box-shadow: none; }
+  85%           { box-shadow: 0 0 12px var(--kc, #6b21a8); }
+}
+
+/* Responsive portal */
+@media (max-width: 900px) {
+  .studio-portal-layout {
+    grid-template-columns: 1fr;
+  }
+  .studio-portal-preview { display: none; } /* Ocultar preview en móvil */
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   19. FOTO HERO — GRANATTE
+   La foto ocupa el 100% de la sección home (#home).
+   Se queda estática dentro de su sección: cuando haces scroll
+   hacia la siguiente sección, la foto desaparece con ella
+   (no sigue fija en pantalla).
+
+   CAPAS (de atrás hacia adelante):
+     z-index 0  → canvas Three.js (ya existente, fijo en body)
+     z-index 1  → .noise grain
+     z-index 2  → #app / secciones
+       dentro del hero:
+       z-index 0 → .hero-photo-wrap (foto + difuminados)
+       z-index 1 → .invocation-circle SVG
+       z-index 2 → .hero-text (título, subtítulo, botón)
+   ══════════════════════════════════════════════════════════════ */
+
+/* Wrapper que contiene la foto y sus capas de difuminación.
+   position: absolute para que ocupe exactamente la sección home
+   sin empujar el contenido. */
+.hero-photo-wrap {
+  position: absolute;
+  inset: 0;                    /* top:0 right:0 bottom:0 left:0 */
+  z-index: 0;
+  overflow: hidden;
+  /* La foto NO es fixed → se queda dentro de la sección */
+}
+
+/* La imagen real.
+   object-fit: cover → rellena el contenedor sin distorsionarse,
+   recortando los bordes si hace falta. */
+.hero-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top; /* 📝 EDITAR: "center center" centra la cara,
+                                   "center top" prioriza la parte de arriba */
+  display: block;
+  /* Opacidad reducida para que el canvas 3D de fondo se siga viendo */
+  opacity: 0.45;               /* 📝 EDITAR: 0.3 = muy sutil, 0.7 = dominante */
+  /* Filtro suave: satura un poco menos para que case con la paleta oscura */
+  filter: saturate(0.7) brightness(0.6);
+}
+
+/* Viñeta perimetral — oscurece los 4 bordes de la foto
+   Técnica: radial-gradient transparente al centro, oscuro en los bordes */
+.hero-photo-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 80% 80% at 50% 40%,
+    transparent 30%,
+    rgba(8, 8, 26, 0.5) 70%,
+    rgba(8, 8, 26, 0.85) 100%
+  );
+  /* 📝 EDITAR: el tercer valor (0.85) controla la oscuridad del borde.
+     Más alto = bordes más oscuros → más difuminado. */
+}
+
+/* Degradado inferior — asegura que el texto del hero sea siempre legible
+   independientemente del contenido de la foto */
+.hero-photo-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(8, 8, 26, 0.1) 0%,    /* Arriba: casi transparente */
+    rgba(8, 8, 26, 0.0) 30%,   /* Centro: invisible */
+    rgba(8, 8, 26, 0.6) 75%,   /* Parte baja: oscureciendo */
+    rgba(8, 8, 26, 0.92) 100%  /* Muy abajo: casi opaco */
+  );
+  /* 📝 EDITAR: ajusta los % y opacidades para controlar el fade */
+}
+
+/* Asegurarse de que el SVG del círculo y el texto hero
+   queden POR ENCIMA de la foto */
+.section-home .invocation-circle { z-index: 1; }
+.section-home .hero-text         { z-index: 2; position: relative; }
+.section-home .scroll-indicator  { z-index: 2; position: relative; }
