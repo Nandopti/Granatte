@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<!--
+  ╔══════════════════════════════════════════════════════════════╗
+  ║   STUDIO.HTML — Creador Musical Mágico                     ║
+  ║   Artista: GRANATTE                                          ║
+  ╠══════════════════════════════════════════════════════════════╣
+  ║  COMPONENTES:                                               ║
+  ║  1. Secuenciador de batería (16 pasos, 6 instrumentos)      ║
+  ║  2. Piano mágico de acordes (teclas con acordes listos)     ║
+  ║  3. Seguimiento de manos con cámara (MediaPipe Hands)       ║
+  ║  4. Exportación a MP3 (lamejs + Web Audio API)              ║
+  ║                                                             ║
+  ║  LIBRERÍAS USADAS:                                          ║
+  ║  · Tone.js       → síntesis de audio y secuenciador        ║
+  ║  · MediaPipe     → seguimiento de manos en tiempo real     ║
+  ║  · lamejs        → codificación MP3 en el browser          ║
+  ╚══════════════════════════════════════════════════════════════╝
+-->
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Creador Musical · GRANATTE Studio</title>
+  <meta name="description" content="Crea música mística con el secuenciador y piano mágico de GRANATTE. Toca con tus manos y descarga tu creación." />
+
+  <!-- Fuentes (mismas que index.html para consistencia) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Rajdhani:wght@300;400;600&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet" />
+
+  <!--
+    TONE.JS — síntesis de audio Web Audio API de alto nivel
+    Es la librería más robusta para música en el browser.
+    Maneja: sintetizadores, samplers, efectos, secuenciadores, BPM.
+  -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+  <!--
+    LAME.JS (lamejs) — codificador MP3 en JavaScript puro
+    Permite generar archivos MP3 directamente en el browser
+    sin necesitar un servidor backend.
+    Repositorio: https://github.com/zhuker/lamejs
+  -->
+  <script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
+
+  <!--
+    MEDIAPIPE HANDS — seguimiento de manos en tiempo real
+    Usa un modelo de ML liviano que corre en el browser.
+    Detecta 21 puntos clave por mano en cada frame de la cámara.
+    Documentación: https://developers.google.com/mediapipe/solutions/vision/hand_landmarker
+  -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="assets/css/studio.css" />
+</head>
+
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════
+     PANTALLA DE BIENVENIDA / TUTORIAL
+     Se muestra la primera vez o cuando se pulsa "?" 
+     Oculta por JS al hacer click en "Comenzar".
+     ══════════════════════════════════════════════════════════════ -->
+<div id="welcome-screen" class="welcome-screen" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
+
+  <!-- Fondo con partículas decorativas (SVG animado) -->
+  <div class="welcome-bg" aria-hidden="true">
+    <svg viewBox="0 0 800 600" class="welcome-bg-svg">
+      <!-- Estrellas decorativas fijas -->
+      <circle cx="100" cy="80"  r="1" fill="rgba(180,140,255,0.6)"/>
+      <circle cx="250" cy="150" r="1.5" fill="rgba(34,211,238,0.5)"/>
+      <circle cx="600" cy="60"  r="1" fill="rgba(180,140,255,0.4)"/>
+      <circle cx="700" cy="200" r="2" fill="rgba(34,211,238,0.3)"/>
+      <circle cx="50"  cy="400" r="1" fill="rgba(180,140,255,0.5)"/>
+      <circle cx="750" cy="450" r="1.5" fill="rgba(34,211,238,0.4)"/>
+      <circle cx="400" cy="500" r="1" fill="rgba(180,140,255,0.3)"/>
+    </svg>
+  </div>
+
+  <div class="welcome-content">
+
+    <!-- Header -->
+    <div class="welcome-header">
+      <span class="welcome-sigil" aria-hidden="true">🎵</span>
+      <h1 id="welcome-title" class="welcome-title">Creador Musical</h1>
+      <p class="welcome-subtitle">GRANATTE · Studio Místico</p>
+    </div>
+
+    <!-- Instrucciones en cards -->
+    <div class="how-to-play" role="list" aria-label="Cómo jugar">
+
+      <div class="how-card" role="listitem">
+        <div class="how-icon" aria-hidden="true">🥁</div>
+        <h3 class="how-title">Secuenciador de Batería</h3>
+        <p class="how-desc">
+          Activa los cuadrados en cada fila para crear patrones rítmicos.
+          Cada fila es un instrumento diferente. El cursor avanza de izquierda
+          a derecha reproduciendo los pasos activos.
+        </p>
+      </div>
+
+      <div class="how-card" role="listitem">
+        <div class="how-icon" aria-hidden="true">🪄</div>
+        <h3 class="how-title">Piano Mágico de Acordes</h3>
+        <p class="how-desc">
+          Cada tecla de colores toca un acorde completo — no necesitas saber
+          música. Prueba combinar acordes sobre el ritmo de la batería.
+          Mantén presionada una tecla para que suene continuamente.
+        </p>
+      </div>
+
+      <div class="how-card" role="listitem">
+        <div class="how-icon" aria-hidden="true">🤚</div>
+        <h3 class="how-title">Manos Mágicas</h3>
+        <p class="how-desc">
+          Activa la cámara y toca el aire. Tu mano izquierda controla el piano,
+          la derecha activa y desactiva pasos del secuenciador.
+          La cámara detecta tus dedos en tiempo real.
+        </p>
+      </div>
+
+      <div class="how-card" role="listitem">
+        <div class="how-icon" aria-hidden="true">⬇️</div>
+        <h3 class="how-title">Descarga tu Canción</h3>
+        <p class="how-desc">
+          Cuando hayas creado algo que te guste, presiona <strong>Grabar</strong>,
+          toca durante unos segundos y luego <strong>Detener y Descargar</strong>.
+          Se guarda como archivo MP3.
+        </p>
+      </div>
+
+    </div>
+    <!-- /how-to-play -->
+
+    <!-- Consejos rápidos -->
+    <div class="welcome-tips">
+      <p class="tips-title">✦ Consejos rápidos</p>
+      <ul class="tips-list">
+        <li>Empieza por la batería — activa sólo el bombo (fila de abajo) para aprender</li>
+        <li>El BPM controla la velocidad. 80 = lento/relajado, 140 = rápido/energético</li>
+        <li>Los acordes de color cálido (naranjas/rojos) suenan más tensos; los fríos (azules/verdes) más serenos</li>
+        <li>La cámara funciona mejor con buena iluminación y fondo despejado</li>
+      </ul>
+    </div>
+
+    <!-- Botón de inicio -->
+    <button id="btn-start" class="btn-start" aria-label="Comenzar a crear música">
+      <span class="btn-start-icon" aria-hidden="true">✦</span>
+      Comenzar a Crear
+    </button>
+
+    <!-- Link de vuelta al sitio -->
+    <a href="index.html" class="welcome-back-link">
+      ← Volver a la página principal
+    </a>
+
+  </div>
+  <!-- /welcome-content -->
+
+</div>
+<!-- /welcome-screen -->
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     APLICACIÓN PRINCIPAL
+     Oculta hasta que el usuario cierra el welcome screen.
+     ══════════════════════════════════════════════════════════════ -->
+<div id="studio-app" class="studio-app" hidden>
+
+  <!-- ── HEADER DEL STUDIO ──────────────────────────────────────── -->
+  <header class="studio-header" role="banner">
+
+    <!-- Logo / volver al sitio -->
+    <a href="index.html" class="studio-back" aria-label="Volver a GRANATTE">
+      <span aria-hidden="true">←</span> GRANATTE
+    </a>
+
+    <!-- Título -->
+    <h1 class="studio-title" aria-label="Creador Musical">
+      <span aria-hidden="true">🎵</span> Creador Musical
+    </h1>
+
+    <!-- Controles globales de transporte -->
+    <div class="transport-controls" role="group" aria-label="Controles de reproducción">
+
+      <!-- BPM Slider -->
+      <div class="bpm-control">
+        <label for="bpm-slider" class="ctrl-label">BPM</label>
+        <input type="range" id="bpm-slider" class="bpm-slider"
+               min="60" max="180" value="90" step="1"
+               aria-label="Velocidad en BPM" />
+        <output id="bpm-display" class="bpm-display" for="bpm-slider">90</output>
+      </div>
+
+      <!-- Play / Stop -->
+      <button id="btn-play-stop" class="btn-transport btn-play-main" aria-label="Iniciar secuenciador">
+        <span id="play-icon" aria-hidden="true">▶</span>
+        <span id="play-label">Iniciar</span>
+      </button>
+
+      <!-- Botón de grabación para MP3 -->
+      <button id="btn-record" class="btn-transport btn-record" aria-label="Grabar para descargar como MP3">
+        <span aria-hidden="true">⏺</span>
+        <span>Grabar</span>
+      </button>
+
+      <!-- Descargar MP3 (aparece tras grabar) -->
+      <button id="btn-download" class="btn-transport btn-download" hidden aria-label="Descargar grabación como MP3">
+        <span aria-hidden="true">⬇</span>
+        <span>Descargar MP3</span>
+      </button>
+
+      <!-- Limpiar todo -->
+      <button id="btn-clear" class="btn-transport btn-clear" aria-label="Limpiar todos los pasos">
+        <span aria-hidden="true">✕</span>
+        <span>Limpiar</span>
+      </button>
+
+      <!-- Ayuda (reabre el tutorial) -->
+      <button id="btn-help" class="btn-transport btn-help" aria-label="Ver instrucciones">
+        <span aria-hidden="true">?</span>
+      </button>
+
+    </div>
+    <!-- /transport-controls -->
+
+    <!-- Status bar: muestra el estado actual -->
+    <div class="studio-status" role="status" aria-live="polite" id="studio-status">
+      Listo · Pulsa Iniciar para comenzar
+    </div>
+
+  </header>
+  <!-- /studio-header -->
+
+
+  <!-- ── ÁREA PRINCIPAL ────────────────────────────────────────── -->
+  <main class="studio-main" role="main">
+
+    <!-- ════════════════════════════════════════════════════════════
+         COLUMNA IZQUIERDA: Secuenciador de batería + Piano
+         ════════════════════════════════════════════════════════════ -->
+    <div class="studio-left">
+
+      <!-- ────────────────────────────────────────────────────────
+           SECUENCIADOR DE BATERÍA
+           Grid de 6 filas × 16 columnas.
+           Cada celda es un <button> que se activa/desactiva al click.
+           El JS barre las 16 columnas de izquierda a derecha en loop.
+           ──────────────────────────────────────────────────────── -->
+      <section class="sequencer-section" aria-labelledby="seq-title">
+
+        <div class="section-label">
+          <span aria-hidden="true">🥁</span>
+          <h2 id="seq-title">Batería</h2>
+          <!-- Indicador del paso actual (columna que suena) -->
+          <span class="step-indicator" id="step-indicator" aria-live="polite" aria-label="Paso actual">● 1</span>
+        </div>
+
+        <!-- Números de columna (1–16) como referencia visual -->
+        <div class="seq-column-nums" aria-hidden="true">
+          <div class="seq-track-name-spacer"></div>
+          <div class="seq-steps-header">
+            <!-- JS los genera dinámicamente, pero los ponemos estáticos para accesibilidad -->
+            <span>1</span><span>2</span><span>3</span><span>4</span>
+            <span>5</span><span>6</span><span>7</span><span>8</span>
+            <span>9</span><span>10</span><span>11</span><span>12</span>
+            <span>13</span><span>14</span><span>15</span><span>16</span>
+          </div>
+        </div>
+
+        <!--
+          FILAS DEL SECUENCIADOR
+          Cada .seq-row es un instrumento de batería.
+          data-instrument → identifica el sonido a disparar
+          data-color      → color de los botones activos de esa fila
+
+          INSTRUMENTOS DISPONIBLES:
+          · kick    = bombo (sonido grave, base)
+          · snare   = caja (sonido seco, tiempo 2 y 4)
+          · hihat-c = hi-hat cerrado (tick rápido)
+          · hihat-o = hi-hat abierto (shhh largo)
+          · clap    = palmada electrónica
+          · crash   = platillo (símbolo de acento)
+
+          📝 EDITAR: Puedes cambiar los data-instrument por otros
+          si añades más sintetizadores en studio.js → createDrumKit()
+        -->
+        <div class="sequencer-grid" id="sequencer-grid" role="grid" aria-label="Secuenciador de batería">
+
+          <!-- Fila 1: Bombo -->
+          <div class="seq-row" data-instrument="kick" data-color="#6b21a8" role="row">
+            <div class="seq-track-name" role="rowheader">
+              <span class="track-emoji" aria-hidden="true">💥</span>
+              <span>Bombo</span>
+            </div>
+            <div class="seq-steps" role="gridcell">
+              <!-- Los 16 botones de esta fila se generan por JS en initSequencer() -->
+              <!-- Están aquí como comentario para entender la estructura que crea JS:
+              <button class="seq-step" data-row="0" data-col="0" aria-label="Bombo paso 1" aria-pressed="false"></button>
+              ... x16 -->
+            </div>
+          </div>
+
+          <!-- Fila 2: Caja -->
+          <div class="seq-row" data-instrument="snare" data-color="#1d4ed8" role="row">
+            <div class="seq-track-name" role="rowheader">
+              <span class="track-emoji" aria-hidden="true">🥁</span>
+              <span>Caja</span>
+            </div>
+            <div class="seq-steps" role="gridcell"></div>
+          </div>
+
+          <!-- Fila 3: Hi-hat cerrado -->
+          <div class="seq-row" data-instrument="hihat-c" data-color="#0f766e" role="row">
+            <div class="seq-track-name" role="rowheader">
+              <span class="track-emoji" aria-hidden="true">🔔</span>
+              <span>Hi-hat</span>
+            </div>
+            <div class="seq-steps" role="gridcell"></div>
+          </div>
+
+          <!-- Fila 4: Hi-hat abierto -->
+          <div class="seq-row" data-instrument="hihat-o" data-color="#0369a1" role="row">
+            <div class="seq-track-name" role="rowheader">
+              <span class="track-emoji" aria-hidden="true">🔔</span>
+              <span>Hi-hat+</span>
+            </div>
+            <div class="seq-steps" role="gridcell"></div>
+          </div>
+
+          <!-- Fila 5: Palmas -->
+          <div class="seq-row" data-instrument="clap" data-color="#9f1239" role="row">
+            <div class="seq-track-name" role="rowheader">
+              <span class="track-emoji" aria-hidden="true">👏</span>
+              <span>Palmas</span>
+            </div>
+            <div class="seq-steps" role="gridcell"></div>
+          </div>
+
+          <!-- Fila 6: Crash -->
+          <div class="seq-row" data-instrument="crash" data-color="#78350f" role="row">
+            <div class="seq-track-name" role="rowheader">
+              <span class="track-emoji" aria-hidden="true">✨</span>
+              <span>Crash</span>
+            </div>
+            <div class="seq-steps" role="gridcell"></div>
+          </div>
+
+        </div>
+        <!-- /sequencer-grid -->
+
+        <!-- Patrones preestablecidos ("recetas" de ritmos) -->
+        <!-- 📝 EDITAR: Los patrones se definen en studio.js → PRESETS -->
+        <div class="seq-presets" role="group" aria-label="Patrones predefinidos">
+          <span class="presets-label" aria-hidden="true">✦ Patrones:</span>
+          <button class="preset-btn" data-preset="empty"   aria-label="Patrón vacío">Vacío</button>
+          <button class="preset-btn" data-preset="basic"   aria-label="Ritmo básico">Básico</button>
+          <button class="preset-btn" data-preset="ritual"  aria-label="Ritmo ritual">Ritual</button>
+          <button class="preset-btn" data-preset="ocean"   aria-label="Ritmo oceánico">Oceánico</button>
+          <button class="preset-btn" data-preset="witch"   aria-label="Ritmo de bruja">Bruja</button>
+        </div>
+
+      </section>
+      <!-- /sequencer-section -->
+
+
+      <!-- ────────────────────────────────────────────────────────
+           PIANO MÁGICO DE ACORDES
+           Teclas grandes de colores. Cada una dispara un acorde
+           completo (3-4 notas simultáneas).
+           No requiere conocimiento musical.
+           ──────────────────────────────────────────────────────── -->
+      <section class="piano-section" aria-labelledby="piano-title">
+
+        <div class="section-label">
+          <span aria-hidden="true">🪄</span>
+          <h2 id="piano-title">Piano Mágico</h2>
+          <span class="piano-mode-label" id="piano-mode-label">Modo: Acordes</span>
+        </div>
+
+        <!-- Selector de escala musical (cambia los acordes disponibles) -->
+        <!-- 📝 EDITAR: las escalas y acordes se definen en studio.js → SCALES -->
+        <div class="scale-selector" role="group" aria-label="Seleccionar escala musical">
+          <span class="scale-label" aria-hidden="true">Escala:</span>
+          <button class="scale-btn active" data-scale="mystic"  aria-pressed="true">Mística</button>
+          <button class="scale-btn" data-scale="ocean"   aria-pressed="false">Oceánica</button>
+          <button class="scale-btn" data-scale="witch"   aria-pressed="false">Bruja</button>
+          <button class="scale-btn" data-scale="stars"   aria-pressed="false">Estelar</button>
+        </div>
+
+        <!--
+          TECLAS DEL PIANO
+          8 acordes por escala, color distinto para cada uno.
+          Se generan dinámicamente por JS en initPiano()
+          basándose en la escala seleccionada.
+
+          Estructura que genera el JS:
+          <button class="piano-key" data-chord-index="0"
+                  aria-label="Acorde 1: Am"
+                  style="--key-color: #6b21a8">
+            <span class="key-chord-name">Am</span>
+            <span class="key-emotion">Misterio</span>
+          </button>
+        -->
+        <div class="piano-keys" id="piano-keys" role="group" aria-label="Teclas del piano mágico">
+          <!-- Las teclas se insertan aquí por JS -->
+        </div>
+
+        <!-- Ecualizador visual: muestra las notas sonando -->
+        <div class="piano-visualizer" id="piano-visualizer" aria-hidden="true">
+          <!-- Las barras del EQ se insertan por JS -->
+        </div>
+
+        <!-- Indicador del acorde activo -->
+        <div class="chord-display" id="chord-display" aria-live="polite" aria-label="Acorde sonando actualmente">
+          <span class="chord-name" id="current-chord-name">—</span>
+          <span class="chord-notes" id="current-chord-notes"></span>
+        </div>
+
+        <!-- ── BAJO ──────────────────────────────────────────────────
+             Suena la nota grave del acorde mientras el usuario sostiene
+             una tecla del piano. El patrón define el ritmo del bajo.
+
+             Patrones:
+             · Raíz   → toca en los 4 tiempos fuertes (pasos 0,4,8,12)
+             · Corcheas → toca cada dos pasos (0,2,4,6,8,10,12,14)
+             · Sincopado → contratiempos entre los tiempos fuertes
+
+             📝 EDITAR: si quieres cambiar los pasos de cada patrón,
+             ve a studio.js → BASS_PATTERNS
+        ──────────────────────────────────────────────────────────── -->
+        <div class="bass-controls" role="group" aria-label="Patrón del bajo">
+          <span class="bass-label" aria-hidden="true">🎸 Bajo:</span>
+          <button class="bass-btn active" data-bass="root"     aria-pressed="true">Raíz</button>
+          <button class="bass-btn"        data-bass="eighth"   aria-pressed="false">Corcheas</button>
+          <button class="bass-btn"        data-bass="synco"    aria-pressed="false">Sincopado</button>
+          <!-- El bajo solo suena cuando mantienes una tecla del piano -->
+          <span class="bass-hint">← mantén una tecla del piano</span>
+        </div>
+
+      </section>
+      <!-- /piano-section -->
+
+    </div>
+    <!-- /studio-left -->
+
+
+    <!-- ════════════════════════════════════════════════════════════
+         COLUMNA DERECHA: Cámara + Manos
+         ════════════════════════════════════════════════════════════ -->
+    <div class="studio-right">
+
+      <!-- ────────────────────────────────────────────────────────
+           PANEL DE CÁMARA Y SEGUIMIENTO DE MANOS
+           MediaPipe Hands detecta 21 landmarks (puntos clave)
+           por mano en cada frame del video de la cámara.
+           ──────────────────────────────────────────────────────── -->
+      <section class="camera-section" aria-labelledby="camera-title">
+
+        <div class="section-label">
+          <span aria-hidden="true">🤚</span>
+          <h2 id="camera-title">Manos Mágicas</h2>
+        </div>
+
+        <!-- Estado de la cámara / permisos -->
+        <div class="camera-status" id="camera-status" role="status" aria-live="polite">
+          Cámara desactivada
+        </div>
+
+        <!-- Botón para activar la cámara -->
+        <button id="btn-camera" class="btn-camera" aria-label="Activar cámara para control por gestos">
+          <span aria-hidden="true">📷</span> Activar Cámara
+        </button>
+
+        <!-- Contenedor del video + canvas overlay -->
+        <div class="camera-container" id="camera-container" hidden>
+
+          <!--
+            Video del stream de la cámara.
+            MediaPipe lee cada frame de este elemento <video>.
+            playsinline y muted son necesarios para autoplay en móvil.
+          -->
+          <video id="camera-video" class="camera-video"
+                 autoplay playsinline muted
+                 aria-label="Vista de la cámara para seguimiento de manos"></video>
+
+          <!--
+            Canvas overlay donde se dibujan los landmarks de las manos.
+            Se superpone exactamente encima del video.
+            El JS dibuja los 21 puntos y conexiones en cada frame.
+          -->
+          <canvas id="camera-canvas" class="camera-canvas" aria-hidden="true"></canvas>
+
+          <!-- Indicadores de mano detectada -->
+          <div class="hand-indicators" aria-hidden="true">
+            <div class="hand-indicator" id="left-hand-indicator">
+              <span>🤚</span> Izq: Piano
+            </div>
+            <div class="hand-indicator" id="right-hand-indicator">
+              <span>🤚</span> Der: Batería
+            </div>
+          </div>
+
+        </div>
+        <!-- /camera-container -->
+
+        <!-- Guía de gestos -->
+        <div class="gesture-guide" id="gesture-guide">
+          <h3 class="gesture-guide-title">✦ Gestos</h3>
+          <ul class="gesture-list">
+            <li class="gesture-item">
+              <span class="gesture-emoji">👆</span>
+              <div>
+                <strong>Dedo índice izquierdo</strong>
+                <p>Señala una tecla del piano para tocar ese acorde</p>
+              </div>
+            </li>
+            <li class="gesture-item">
+              <span class="gesture-emoji">✌️</span>
+              <div>
+                <strong>Dos dedos izquierda</strong>
+                <p>Siguiente acorde en la escala</p>
+              </div>
+            </li>
+            <li class="gesture-item">
+              <span class="gesture-emoji">✊</span>
+              <div>
+                <strong>Puño derecho</strong>
+                <p>Activa/desactiva el paso del secuenciador que hay debajo</p>
+              </div>
+            </li>
+            <li class="gesture-item">
+              <span class="gesture-emoji">🖐️</span>
+              <div>
+                <strong>Mano abierta derecha</strong>
+                <p>Silencia todos los instrumentos</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <!-- /gesture-guide -->
+
+      </section>
+      <!-- /camera-section -->
+
+
+      <!-- ────────────────────────────────────────────────────────
+           MEZCLADOR DE VOLUMEN
+           Control de volumen individual por instrumento.
+           ──────────────────────────────────────────────────────── -->
+      <section class="mixer-section" aria-labelledby="mixer-title">
+
+        <div class="section-label">
+          <span aria-hidden="true">🎚️</span>
+          <h2 id="mixer-title">Mezclador</h2>
+        </div>
+
+        <!--
+          Cada fader controla el volumen de un canal de audio.
+          El id del input debe coincidir con el data-instrument del secuenciador.
+          📝 EDITAR: Cambia el valor "value" para ajustar el volumen inicial (-30 a 0 dB)
+        -->
+        <div class="mixer-channels" role="group" aria-label="Controles de volumen">
+
+          <div class="mixer-channel">
+            <label class="mixer-label" for="vol-kick">💥<br/>Bombo</label>
+            <input type="range" id="vol-kick" class="vol-fader"
+                   data-channel="kick" min="-40" max="0" value="-6" step="1"
+                   aria-label="Volumen Bombo" orient="vertical"/>
+            <output class="vol-display" for="vol-kick">-6</output>
+          </div>
+
+          <div class="mixer-channel">
+            <label class="mixer-label" for="vol-snare">🥁<br/>Caja</label>
+            <input type="range" id="vol-snare" class="vol-fader"
+                   data-channel="snare" min="-40" max="0" value="-10" step="1"
+                   aria-label="Volumen Caja" orient="vertical"/>
+            <output class="vol-display" for="vol-snare">-10</output>
+          </div>
+
+          <div class="mixer-channel">
+            <label class="mixer-label" for="vol-hihat-c">🔔<br/>Hi-hat</label>
+            <input type="range" id="vol-hihat-c" class="vol-fader"
+                   data-channel="hihat-c" min="-40" max="0" value="-14" step="1"
+                   aria-label="Volumen Hi-hat cerrado" orient="vertical"/>
+            <output class="vol-display" for="vol-hihat-c">-14</output>
+          </div>
+
+          <div class="mixer-channel">
+            <label class="mixer-label" for="vol-hihat-o">🔔<br/>Hi+</label>
+            <input type="range" id="vol-hihat-o" class="vol-fader"
+                   data-channel="hihat-o" min="-40" max="0" value="-18" step="1"
+                   aria-label="Volumen Hi-hat abierto" orient="vertical"/>
+            <output class="vol-display" for="vol-hihat-o">-18</output>
+          </div>
+
+          <div class="mixer-channel">
+            <label class="mixer-label" for="vol-clap">👏<br/>Palmas</label>
+            <input type="range" id="vol-clap" class="vol-fader"
+                   data-channel="clap" min="-40" max="0" value="-12" step="1"
+                   aria-label="Volumen Palmas" orient="vertical"/>
+            <output class="vol-display" for="vol-clap">-12</output>
+          </div>
+
+          <div class="mixer-channel">
+            <label class="mixer-label" for="vol-crash">✨<br/>Crash</label>
+            <input type="range" id="vol-crash" class="vol-fader"
+                   data-channel="crash" min="-40" max="0" value="-20" step="1"
+                   aria-label="Volumen Crash" orient="vertical"/>
+            <output class="vol-display" for="vol-crash">-20</output>
+          </div>
+
+          <!-- Canal del piano -->
+          <div class="mixer-channel mixer-channel--piano">
+            <label class="mixer-label" for="vol-piano">🪄<br/>Piano</label>
+            <input type="range" id="vol-piano" class="vol-fader"
+                   data-channel="piano" min="-40" max="0" value="-8" step="1"
+                   aria-label="Volumen Piano" orient="vertical"/>
+            <output class="vol-display" for="vol-piano">-8</output>
+          </div>
+
+          <!-- Canal del bajo — separado visualmente del resto -->
+          <div class="mixer-channel mixer-channel--bass">
+            <label class="mixer-label" for="vol-bass">🎸<br/>Bajo</label>
+            <input type="range" id="vol-bass" class="vol-fader"
+                   data-channel="bass" min="-40" max="0" value="-10" step="1"
+                   aria-label="Volumen Bajo" orient="vertical"/>
+            <output class="vol-display" for="vol-bass">-10</output>
+          </div>
+
+        </div>
+        <!-- /mixer-channels -->
+
+        <!-- Efectos globales -->
+        <div class="fx-controls" role="group" aria-label="Efectos de audio">
+          <div class="fx-item">
+            <label for="fx-reverb" class="fx-label">Reverb</label>
+            <input type="range" id="fx-reverb" min="0" max="1" value="0.3" step="0.05"
+                   aria-label="Cantidad de reverberación" />
+          </div>
+          <div class="fx-item">
+            <label for="fx-delay" class="fx-label">Delay</label>
+            <input type="range" id="fx-delay" min="0" max="0.8" value="0.1" step="0.05"
+                   aria-label="Cantidad de delay/eco" />
+          </div>
+        </div>
+
+      </section>
+      <!-- /mixer-section -->
+
+    </div>
+    <!-- /studio-right -->
+
+  </main>
+  <!-- /studio-main -->
+
+</div>
+<!-- /studio-app -->
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     SCRIPTS
+     Orden: Tone.js y lamejs ya cargaron en el <head>.
+     MediaPipe también cargó en el <head>.
+     Ahora cargamos nuestro código del studio.
+     ══════════════════════════════════════════════════════════════ -->
+<script src="assets/js/studio.js"></script>
+
+</body>
+</html>
