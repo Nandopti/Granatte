@@ -1,0 +1,1705 @@
+<!DOCTYPE html>
+<!--
+  ╔══════════════════════════════════════════════════════════════╗
+  ║         ARTISTA EMERGENTE — PÁGINA MÍSTICA                  ║
+  ║         Temática: Esoterismo · Mar · Sirenas · Brujería     ║
+  ╠══════════════════════════════════════════════════════════════╣
+  ║  CÓMO EDITAR:                                               ║
+  ║  · Busca los comentarios con "📝 EDITAR:" para cambiar      ║
+  ║    textos, colores, links, imágenes fácilmente.             ║
+  ║  · Las variables CSS principales están en style.css         ║
+  ║    bajo el bloque ":root { }" — cambia colores ahí.         ║
+  ║  · Las animaciones 3D se controlan en three-scene.js        ║
+  ║  · La navegación lateral está al final de este archivo      ║
+  ╚══════════════════════════════════════════════════════════════╝
+-->
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- 📝 EDITAR: Cambia el título del navegador y descripción SEO aquí -->
+  <title>GRANATTE · Compositora e interprete</title>
+
+  <meta name="description" content="Artista emergente. Música entre las estrellas y el fondo del mar." />
+  <meta name="theme-color" content="#0d0d2b" />
+
+  <!-- ── FUENTES ─────────────────────────────────────────────── -->
+  <!--
+    Usamos Google Fonts. Si no hay internet, el navegador cae a serif.
+    · "Cinzel Decorative" → titulares arcanos
+    · "IM Fell English"   → cuerpo de texto antiguo
+    · "Rajdhani"          → etiquetas y datos técnicos
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=IM+Fell+English:ital@0;1&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet" />
+
+  <!-- ── LIBRERÍAS DE TERCEROS ────────────────────────────────── -->
+  <!--
+    Three.js  → escena 3D del fondo (partículas oceánicas y estrellas)
+    GSAP      → animaciones suaves de la UI (línea de tiempo, scroll)
+    ScrollTrigger → plugin GSAP para activar animaciones al hacer scroll
+  -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <!-- ── ESTILOS ──────────────────────────────────────────────── -->
+  <link rel="stylesheet" href="assets/css/style.css" />
+
+</head>
+
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════
+     CANVAS 3D DE FONDO
+     Three.js renderiza aquí las partículas y el oceano.
+     Está fijo (position: fixed) detrás de todo el contenido.
+     No lo elimines o perderás el fondo animado.
+     El script que lo controla es: assets/js/three-scene.js
+     ══════════════════════════════════════════════════════════════ -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- ══════════════════════════════════════════════════════════════
+     OVERLAY DE RUIDO
+     Capa de textura granular encima del canvas para dar
+     sensación analógica/vintage. Puro CSS (ver style.css → .noise).
+     ══════════════════════════════════════════════════════════════ -->
+<div class="noise"></div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     CURSOR PERSONALIZADO
+     El cursor "estrella" que sigue al mouse.
+     Se mueve con JS en assets/js/ui.js
+     ══════════════════════════════════════════════════════════════ -->
+<div class="cursor" id="cursor">✦</div>
+<div class="cursor-trail" id="cursor-trail"></div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     WRAPPER PRINCIPAL
+     Todo el layout vive dentro de #app.
+     Estructura: sidebar-left | main-content | sidebar-right
+     ══════════════════════════════════════════════════════════════ -->
+<div id="app">
+
+  <!-- ──────────────────────────────────────────────────────────
+       SIDEBAR IZQUIERDO (navegación vertical al estilo 90s/2000s)
+       Los <a href="#section-id"> enlazan a las secciones de #main.
+       📝 EDITAR: Cambia los textos de los <span> para renombrar
+       las secciones. Si añades una sección nueva, añade un <li>
+       aquí también.
+       ────────────────────────────────────────────────────────── -->
+  <nav id="sidebar-left" aria-label="Navegación principal">
+
+    <!-- Logo / nombre del artista en el sidebar -->
+    <div class="sidebar-brand">
+      <!-- 📝 EDITAR: Cambia el sigil/símbolo y el nombre del artista -->
+      <div class="sigil" aria-hidden="true">⊛</div>
+      <span class="brand-name">GRANATTE</span>
+    </div>
+
+    <!-- Separador decorativo con símbolo esotérico -->
+    <div class="sidebar-divider" aria-hidden="true">
+      ─── ✦ ───
+    </div>
+
+    <!-- Links de navegación -->
+    <ul class="nav-list" role="list">
+      <li class="nav-item active" data-section="home">
+        <a href="#home" class="nav-link" aria-current="page">
+          <span class="nav-icon" aria-hidden="true">☽</span>
+          <span class="nav-label">El Umbral</span>
+        </a>
+      </li>
+      <li class="nav-item" data-section="profile">
+        <a href="#profile" class="nav-link">
+          <span class="nav-icon" aria-hidden="true">◈</span>
+          <span class="nav-label">El Espejo</span>
+          <!-- Nota: "El Espejo" = sección de perfil/sobre mí -->
+        </a>
+      </li>
+      <li class="nav-item" data-section="trajectory">
+        <a href="#trajectory" class="nav-link">
+          <span class="nav-icon" aria-hidden="true">⊕</span>
+          <span class="nav-label">La Travesía</span>
+          <!-- "La Travesía" = trayectoria artística -->
+        </a>
+      </li>
+      <li class="nav-item" data-section="project">
+        <a href="#project" class="nav-link">
+          <span class="nav-icon" aria-hidden="true">⋆</span>
+          <span class="nav-label">El Grimorio</span>
+          <!-- "El Grimorio" = descripción del proyecto musical -->
+        </a>
+      </li>
+      <li class="nav-item" data-section="portfolio">
+        <a href="#portfolio" class="nav-link">
+          <span class="nav-icon" aria-hidden="true">✦</span>
+          <span class="nav-label">Las Visiones</span>
+          <!-- "Las Visiones" = portafolio fotográfico -->
+        </a>
+      </li>
+      <li class="nav-item" data-section="music">
+        <a href="#music" class="nav-link">
+          <span class="nav-icon" aria-hidden="true">♆</span>
+          <span class="nav-label">Las Mareas</span>
+          <!-- "Las Mareas" = tracks / música -->
+        </a>
+      </li>
+      <li class="nav-item" data-section="contact">
+        <a href="#contact" class="nav-link">
+          <span class="nav-icon" aria-hidden="true">☿</span>
+          <span class="nav-label">El Oráculo</span>
+        </a>
+      </li>
+      <!-- ── Enlace a la página del Creador Musical (página separada) ── -->
+      <li class="nav-item nav-item--special">
+        <a href="#studio-portal" class="nav-link nav-link--studio" aria-label="Ir al Creador Musical">
+          <span class="nav-icon" aria-hidden="true">🎹</span>
+          <span class="nav-label">Creadora Musical</span>
+        </a>
+      </li>
+    </ul>
+
+    <!-- Elemento decorativo inferior del sidebar -->
+    <div class="sidebar-footer" aria-hidden="true">
+      <div class="zodiac-wheel">
+        <!-- SVG del círculo zodiacal — rotación CSS animada -->
+        <svg viewBox="0 0 100 100" class="zodiac-svg" aria-hidden="true">
+          <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(180,140,255,0.3)" stroke-width="0.5"/>
+          <circle cx="50" cy="50" r="38" fill="none" stroke="rgba(100,200,255,0.2)" stroke-width="0.3" stroke-dasharray="3 4"/>
+          <!-- Doce puntos zodiacales distribuidos en 360° -->
+          <!-- Cada punto a 30° de distancia: 360/12 = 30° -->
+          <g class="zodiac-symbols" font-size="4" fill="rgba(200,170,255,0.7)" text-anchor="middle" dominant-baseline="central">
+            <text transform="translate(50,5)">♈</text>
+            <text transform="translate(73,11)">♉</text>
+            <text transform="translate(90,30)">♊</text>
+            <text transform="translate(95,53)">♋</text>
+            <text transform="translate(85,75)">♌</text>
+            <text transform="translate(65,90)">♍</text>
+            <text transform="translate(43,95)">♎</text>
+            <text transform="translate(22,88)">♏</text>
+            <text transform="translate(8,70)">♐</text>
+            <text transform="translate(5,48)">♑</text>
+            <text transform="translate(14,26)">♒</text>
+            <text transform="translate(32,10)">♓</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+  </nav>
+  <!-- /sidebar-left -->
+
+
+  <!-- ──────────────────────────────────────────────────────────
+       CONTENIDO PRINCIPAL
+       Cada <section> es una "página" del scroll vertical.
+       ────────────────────────────────────────────────────────── -->
+  <main id="main-content" role="main">
+
+    <!-- ══════════════════════════════════════
+         SECCIÓN 1: HOME / EL UMBRAL
+         Pantalla de entrada, hero visual.
+         ══════════════════════════════════════ -->
+    <section id="home" class="section section-home" aria-labelledby="home-title">
+
+      <!--
+        FOTO DE FONDO DEL HERO — granate.jpg
+        Capas de arriba hacia abajo:
+          1. .hero-photo        → la imagen real (object-fit: cover)
+          2. .hero-photo-blur   → capa de blur suave en los bordes
+          3. .hero-photo-vignette → viñeta oscura perimetral
+          4. .hero-photo-gradient → degradado oscuro abajo para el texto
+          Todo lo anterior queda DETRÁS del canvas 3D y del SVG.
+      -->
+      <div class="hero-photo-wrap" aria-hidden="true">
+        <img
+          src="assets/images/granate.jpg"
+          alt=""
+          class="hero-photo"
+          loading="eager"
+        />
+        <!-- Difuminación progresiva en los 4 bordes -->
+        <div class="hero-photo-vignette"></div>
+        <!-- Degradado hacia abajo para que el texto sea legible -->
+        <div class="hero-photo-gradient"></div>
+      </div>
+
+      <!-- Círculo de invocación SVG decorativo -->
+      <div class="invocation-circle" aria-hidden="true">
+        <svg viewBox="0 0 400 400" class="circle-svg">
+          <!-- Círculo exterior con dash animado -->
+          <circle cx="200" cy="200" r="190" fill="none"
+                  stroke="rgba(150,100,255,0.4)" stroke-width="1"
+                  stroke-dasharray="8 4" class="circle-outer"/>
+          <!-- Pentáculo inscrito -->
+          <polygon points="200,20 380,145 315,340 85,340 20,145"
+                   fill="none" stroke="rgba(100,180,255,0.2)" stroke-width="0.8"/>
+          <!-- Círculo interior pulsante -->
+          <circle cx="200" cy="200" r="150" fill="none"
+                  stroke="rgba(200,150,255,0.15)" stroke-width="0.5"
+                  class="circle-pulse"/>
+        </svg>
+      </div>
+
+      <!-- Título principal del artista -->
+      <div class="hero-text">
+        <!-- 📝 EDITAR: Nombre artístico en el título hero -->
+        <h1 id="home-title" class="hero-title">
+          <span class="hero-title-line glitch-text" data-text="GRANATTE">GRANATTE</span>
+        </h1>
+        <!-- 📝 EDITAR: Tagline/subtítulo debajo del nombre -->
+        <p class="hero-subtitle">
+          Música · Esoterismo · Profundidades
+        </p>
+        <!-- 📝 EDITAR: Frase poética debajo del subtítulo -->
+        <blockquote class="hero-quote">
+          "Donde los astros se ahogan en el mar,<br/>
+          nace la canción que el océano olvidó."
+        </blockquote>
+
+        <!-- Botón de entrada -->
+        <a href="#profile" class="btn-enter" aria-label="Entrar al sitio">
+          <span class="btn-enter-text">Descender</span>
+          <span class="btn-enter-icon" aria-hidden="true">▾</span>
+        </a>
+      </div>
+
+      <!-- Indicador de scroll -->
+      <div class="scroll-indicator" aria-hidden="true">
+        <span class="scroll-line"></span>
+        <span class="scroll-label">scroll</span>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════
+           CRIATURAS DEL MAR — SVG animados con CSS
+           Viajan de derecha a izquierda (como corriente oceánica).
+           Cada uno tiene su propio delay para que no aparezcan
+           todos al mismo tiempo.
+
+           CÓMO FUNCIONA:
+           · position: fixed → flotan sobre toda la página
+           · animation keyframes: translateX de +110vw a -30vw
+           · pointer-events: none → no interfieren con clicks
+           · z-index: 3 → encima del canvas 3D pero debajo del contenido
+
+           📝 EDITAR:
+           · Cambia animation-duration para velocidad
+           · Cambia animation-delay para el timing de aparición
+           · Cambia top/bottom para la altura en pantalla
+      ══════════════════════════════════════════════════════ -->
+      <div class="sea-creatures" aria-hidden="true">
+
+        <!-- ── PEZ PAYASO 1 ── -->
+        <div class="creature creature-clownfish" id="fish1">
+          <svg viewBox="0 0 80 50" xmlns="http://www.w3.org/2000/svg">
+            <!-- Cuerpo naranja -->
+            <ellipse cx="38" cy="25" rx="22" ry="14" fill="#E8621A" opacity="0.9"/>
+            <!-- Bandas blancas características del pez payaso -->
+            <rect x="26" y="12" width="6" height="26" rx="3" fill="white" opacity="0.85"/>
+            <rect x="38" y="12" width="6" height="26" rx="3" fill="white" opacity="0.85"/>
+            <!-- Contorno oscuro suave -->
+            <ellipse cx="38" cy="25" rx="22" ry="14" fill="none" stroke="#7A2A00" stroke-width="1" opacity="0.5"/>
+            <!-- Aleta dorsal -->
+            <path d="M 28 12 Q 35 2 48 11" fill="#E8621A" stroke="#7A2A00" stroke-width="0.8" opacity="0.9"/>
+            <!-- Aleta pectoral -->
+            <ellipse cx="30" cy="30" rx="7" ry="4" fill="#F07830" opacity="0.7" transform="rotate(-20 30 30)"/>
+            <!-- Cola -->
+            <path d="M 58 18 L 72 10 L 74 25 L 72 40 L 58 32 Z" fill="#E8621A" stroke="#7A2A00" stroke-width="0.8" opacity="0.9"/>
+            <!-- Franja blanca en cola -->
+            <path d="M 58 18 L 64 11 L 65 25 L 64 39 L 58 32 Z" fill="white" opacity="0.7"/>
+            <!-- Ojo -->
+            <circle cx="22" cy="22" r="5" fill="white"/>
+            <circle cx="21" cy="22" r="3" fill="#1A1A1A"/>
+            <circle cx="20" cy="21" r="1" fill="white"/>
+            <!-- Boca -->
+            <path d="M 14 27 Q 17 30 20 27" fill="none" stroke="#7A2A00" stroke-width="1.2"/>
+            <!-- Aleta ventral -->
+            <path d="M 35 38 Q 40 48 45 38" fill="#E8621A" opacity="0.7"/>
+          </svg>
+        </div>
+
+        <!-- ── PEZ PAYASO 2 (más pequeño, distinta altura) ── -->
+        <div class="creature creature-clownfish creature-clownfish--small" id="fish2">
+          <svg viewBox="0 0 80 50" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="38" cy="25" rx="22" ry="14" fill="#F07020" opacity="0.85"/>
+            <rect x="26" y="12" width="6" height="26" rx="3" fill="white" opacity="0.8"/>
+            <rect x="38" y="12" width="6" height="26" rx="3" fill="white" opacity="0.8"/>
+            <ellipse cx="38" cy="25" rx="22" ry="14" fill="none" stroke="#7A2A00" stroke-width="1" opacity="0.4"/>
+            <path d="M 28 12 Q 35 2 48 11" fill="#F07020" stroke="#7A2A00" stroke-width="0.8" opacity="0.85"/>
+            <path d="M 58 18 L 72 10 L 74 25 L 72 40 L 58 32 Z" fill="#F07020" stroke="#7A2A00" stroke-width="0.8" opacity="0.85"/>
+            <path d="M 58 18 L 64 11 L 65 25 L 64 39 L 58 32 Z" fill="white" opacity="0.65"/>
+            <circle cx="22" cy="22" r="5" fill="white"/>
+            <circle cx="21" cy="22" r="3" fill="#1A1A1A"/>
+            <circle cx="20" cy="21" r="1" fill="white"/>
+          </svg>
+        </div>
+
+        <!-- ── PEZ KOI / CARPA (inspirado en la imagen de referencia) ── -->
+        <div class="creature creature-koi" id="fish3">
+          <svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+            <!-- Cuerpo blanco perlado -->
+            <ellipse cx="55" cy="30" rx="35" ry="18" fill="#D8EEF8" opacity="0.88"/>
+            <!-- Manchas azuladas del koi -->
+            <ellipse cx="48" cy="24" rx="10" ry="7" fill="#7AAFC0" opacity="0.45"/>
+            <ellipse cx="62" cy="35" rx="8" ry="5" fill="#4A8FA8" opacity="0.35"/>
+            <ellipse cx="40" cy="32" rx="6" ry="4" fill="#5E9EB8" opacity="0.3"/>
+            <!-- Contorno suave -->
+            <ellipse cx="55" cy="30" rx="35" ry="18" fill="none" stroke="#8CC4D8" stroke-width="1" opacity="0.5"/>
+            <!-- Aleta dorsal elegante -->
+            <path d="M 38 12 Q 48 -2 65 11" fill="rgba(200,225,240,0.7)" stroke="#8CC4D8" stroke-width="0.8"/>
+            <!-- Cola bifurcada grande -->
+            <path d="M 88 22 Q 108 8  115 18 Q 108 30 115 42 Q 108 52 88 38 Z"
+                  fill="#D8EEF8" stroke="#8CC4D8" stroke-width="0.8" opacity="0.85"/>
+            <!-- Venas de la cola -->
+            <path d="M 90 28 Q 106 18 113 18 M 90 32 Q 106 42 113 42"
+                  fill="none" stroke="#8CC4D8" stroke-width="0.5" opacity="0.5"/>
+            <!-- Aletas pectorales translúcidas -->
+            <path d="M 45 38 Q 35 50 50 47" fill="rgba(200,225,240,0.6)" stroke="#8CC4D8" stroke-width="0.6"/>
+            <!-- Ojo -->
+            <circle cx="24" cy="27" r="6" fill="white" opacity="0.95"/>
+            <circle cx="23" cy="27" r="4" fill="#1A3545"/>
+            <circle cx="22" cy="26" r="1.5" fill="white"/>
+            <!-- Iris azul -->
+            <circle cx="23" cy="27" r="2.5" fill="#2A5570" opacity="0.8"/>
+            <circle cx="22" cy="26" r="1.5" fill="white"/>
+            <!-- Bigotes/barbillas decorativas -->
+            <path d="M 16 30 Q 8 28 4 32" fill="none" stroke="#8CC4D8" stroke-width="0.8" opacity="0.7"/>
+            <path d="M 16 32 Q 6 34 2 38" fill="none" stroke="#8CC4D8" stroke-width="0.8" opacity="0.7"/>
+          </svg>
+        </div>
+
+        <!-- ── SIRENA (aparece más raramente, más grande) ── -->
+        <div class="creature creature-siren" id="siren1">
+          <svg viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
+            <!-- Cola de sirena -->
+            <!-- Escamas: degradado teal -->
+            <defs>
+              <linearGradient id="tailGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%"   stop-color="#3EC6D8" stop-opacity="0.9"/>
+                <stop offset="60%"  stop-color="#1A7A8A" stop-opacity="0.85"/>
+                <stop offset="100%" stop-color="#0B4A5E" stop-opacity="0.7"/>
+              </linearGradient>
+              <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%"   stop-color="#C8D8F0" stop-opacity="0.95"/>
+                <stop offset="100%" stop-color="#8CC4D8" stop-opacity="0.8"/>
+              </linearGradient>
+            </defs>
+            <!-- Cola: forma de cola de pez -->
+            <path d="M 35 105 Q 30 145 20 165 Q 15 178 5 185 Q 15 190 30 182 Q 40 172 50 160
+                     Q 60 172 70 182 Q 85 190 95 185 Q 85 178 80 165 Q 70 145 65 105 Z"
+                  fill="url(#tailGrad)" stroke="#1A7A8A" stroke-width="1"/>
+            <!-- Aleta final bifurcada izquierda -->
+            <path d="M 20 165 Q 5 175 2 190 Q 15 185 28 178" fill="#3EC6D8" opacity="0.7"/>
+            <!-- Aleta final bifurcada derecha -->
+            <path d="M 80 165 Q 95 175 98 190 Q 85 185 72 178" fill="#3EC6D8" opacity="0.7"/>
+            <!-- Líneas de escamas -->
+            <path d="M 38 108 Q 50 112 62 108 M 36 118 Q 50 123 64 118
+                     M 35 128 Q 50 133 65 128 M 35 138 Q 50 143 65 138
+                     M 36 148 Q 50 152 64 148"
+                  fill="none" stroke="#1A7A8A" stroke-width="0.6" opacity="0.5"/>
+            <!-- Torso / cuerpo -->
+            <ellipse cx="50" cy="85" rx="18" ry="24" fill="url(#bodyGrad)"/>
+            <!-- Brazos -->
+            <path d="M 32 80 Q 18 72 12 82 Q 18 88 30 86" fill="#C8D8F0" opacity="0.8"/>
+            <path d="M 68 80 Q 82 72 88 82 Q 82 88 70 86" fill="#C8D8F0" opacity="0.8"/>
+            <!-- Cabello fluyendo (hacia la derecha = dirección del movimiento) -->
+            <path d="M 38 58 Q 25 45 15 50 Q 20 60 30 65"
+                  fill="#D4E8F0" opacity="0.75" stroke="#8CC4D8" stroke-width="0.5"/>
+            <path d="M 42 55 Q 30 38 18 40 Q 22 52 35 60"
+                  fill="#C0D8EE" opacity="0.65" stroke="#8CC4D8" stroke-width="0.5"/>
+            <path d="M 50 54 Q 42 36 28 36 Q 30 48 42 56"
+                  fill="#B8D0EC" opacity="0.6"/>
+            <!-- Cabeza -->
+            <circle cx="50" cy="62" r="20" fill="#D4E8F0" opacity="0.92"/>
+            <!-- Cara -->
+            <!-- Ojos cerrados / almendrados (mirando al frente del viaje) -->
+            <path d="M 42 60 Q 45 57 48 60" fill="none" stroke="#1A3545" stroke-width="1.2"/>
+            <path d="M 52 60 Q 55 57 58 60" fill="none" stroke="#1A3545" stroke-width="1.2"/>
+            <!-- Nariz pequeña -->
+            <circle cx="50" cy="65" r="1.2" fill="#A8C8D8" opacity="0.7"/>
+            <!-- Sonrisa sutil -->
+            <path d="M 44 70 Q 50 74 56 70" fill="none" stroke="#1A3545" stroke-width="1" opacity="0.7"/>
+            <!-- Corona / diadema de perlas -->
+            <path d="M 34 52 Q 50 44 66 52" fill="none" stroke="#C8D8F0" stroke-width="1.5" opacity="0.8"/>
+            <circle cx="34" cy="52" r="2" fill="#D4E8F0" opacity="0.9"/>
+            <circle cx="42" cy="47" r="2" fill="#D4E8F0" opacity="0.9"/>
+            <circle cx="50" cy="44" r="2.5" fill="white" opacity="0.95"/>
+            <circle cx="58" cy="47" r="2" fill="#D4E8F0" opacity="0.9"/>
+            <circle cx="66" cy="52" r="2" fill="#D4E8F0" opacity="0.9"/>
+            <!-- Destellos de luz en el agua alrededor de la sirena -->
+            <circle cx="15" cy="95" r="1.5" fill="#8DD4E8" opacity="0.5"/>
+            <circle cx="85" cy="110" r="1" fill="#8DD4E8" opacity="0.4"/>
+            <circle cx="10" cy="130" r="1" fill="#8DD4E8" opacity="0.35"/>
+          </svg>
+        </div>
+
+        <!-- ── PECECITO SIMPLE (pez azul pequeño, vive en cardúmenes) ── -->
+        <div class="creature creature-tiny" id="fish4">
+          <svg viewBox="0 0 40 25" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="18" cy="12" rx="12" ry="7" fill="#4A8FA8" opacity="0.8"/>
+            <path d="M 28 7 L 38 3 L 40 12 L 38 21 L 28 17 Z" fill="#4A8FA8" opacity="0.7"/>
+            <circle cx="9" cy="10" r="3" fill="white" opacity="0.9"/>
+            <circle cx="8" cy="10" r="1.8" fill="#1A2535"/>
+            <circle cx="8" cy="9.5" r="0.6" fill="white"/>
+            <path d="M 28 7 L 33 4 L 34 12 L 33 20 L 28 17 Z" fill="rgba(140,196,214,0.5)"/>
+          </svg>
+        </div>
+
+        <!-- ── SEGUNDO PECECITO AZUL (cardumen) ── -->
+        <div class="creature creature-tiny creature-tiny--b" id="fish5">
+          <svg viewBox="0 0 40 25" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="18" cy="12" rx="12" ry="7" fill="#2A6A88" opacity="0.75"/>
+            <path d="M 28 7 L 38 3 L 40 12 L 38 21 L 28 17 Z" fill="#2A6A88" opacity="0.65"/>
+            <circle cx="9" cy="10" r="3" fill="white" opacity="0.85"/>
+            <circle cx="8" cy="10" r="1.8" fill="#1A2535"/>
+            <circle cx="8" cy="9.5" r="0.6" fill="white"/>
+          </svg>
+        </div>
+
+      </div>
+      <!-- /sea-creatures -->
+
+    </section>
+    <!-- /home -->
+
+
+    <!-- ══════════════════════════════════════
+         SECCIÓN 2: PERFIL / EL ESPEJO
+         Foto de perfil + bio del artista.
+         ══════════════════════════════════════ -->
+    <section id="profile" class="section section-profile" aria-labelledby="profile-title">
+
+      <div class="section-header">
+        <span class="section-rune" aria-hidden="true">◈</span>
+        <!-- 📝 EDITAR: Subtítulo de la sección -->
+        <h2 id="profile-title" class="section-title">El Espejo</h2>
+        <span class="section-subtitle">— Quién Soy —</span>
+      </div>
+
+      <div class="profile-layout">
+
+        <!-- Marco de la foto de perfil -->
+        <div class="profile-photo-frame">
+          <!--
+            📝 EDITAR: Reemplaza el src por tu foto real.
+            Tamaño recomendado: 600×800px mínimo.
+            Si no tienes foto aún, el placeholder SVG se muestra.
+          -->
+          <div class="profile-photo-placeholder" role="img" aria-label="Foto de perfil de GRANATTE">
+            <!-- Placeholder SVG — borrar cuando pongas foto real -->
+            <svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <radialGradient id="glow" cx="50%" cy="40%" r="60%">
+                  <stop offset="0%" stop-color="#6b3fa0" stop-opacity="0.8"/>
+                  <stop offset="100%" stop-color="#0d0d2b" stop-opacity="1"/>
+                </radialGradient>
+                <clipPath id="siren-clip">
+                  <ellipse cx="150" cy="200" rx="120" ry="160"/>
+                </clipPath>
+              </defs>
+              <!-- Fondo gradiente -->
+              <rect width="300" height="400" fill="url(#glow)"/>
+              <!-- Silueta abstracta de sirena/figura -->
+              <!-- Cabeza -->
+              <circle cx="150" cy="100" r="55" fill="rgba(180,140,255,0.15)" stroke="rgba(150,100,255,0.5)" stroke-width="0.8"/>
+              <!-- Hombros y torso -->
+              <path d="M 80 170 Q 150 190 220 170 L 235 300 Q 150 320 65 300 Z"
+                    fill="rgba(100,150,255,0.1)" stroke="rgba(100,180,255,0.3)" stroke-width="0.8"/>
+              <!-- Cola de sirena -->
+              <path d="M 95 295 Q 100 350 80 390 Q 150 410 220 390 Q 200 350 205 295"
+                    fill="rgba(0,200,180,0.1)" stroke="rgba(0,220,180,0.4)" stroke-width="0.8"/>
+              <!-- Escamas decorativas -->
+              <path d="M 110 310 Q 150 330 190 310 M 100 330 Q 150 355 200 330 M 95 350 Q 150 375 205 350"
+                    fill="none" stroke="rgba(0,220,180,0.3)" stroke-width="0.5"/>
+              <!-- Luna creciente en la frente -->
+              <path d="M 135 80 A 15 15 0 0 1 165 80" fill="none" stroke="rgba(255,230,150,0.8)" stroke-width="1.5"/>
+              <!-- Estrellas alrededor -->
+              <text x="60" y="60" font-size="12" fill="rgba(255,220,100,0.6)">✦</text>
+              <text x="220" y="75" font-size="8" fill="rgba(180,140,255,0.7)">⋆</text>
+              <text x="40" y="150" font-size="6" fill="rgba(100,200,255,0.5)">✦</text>
+              <text x="248" y="200" font-size="10" fill="rgba(255,200,150,0.5)">⋆</text>
+              <!-- Texto placeholder -->
+              <text x="150" y="430" font-size="10" fill="rgba(180,140,255,0.5)"
+                    text-anchor="middle" font-family="serif">[ tu foto aquí ]</text>
+            </svg>
+          </div>
+
+          <!-- Marcos decorativos de la foto — capas CSS -->
+          <div class="photo-frame-outer" aria-hidden="true"></div>
+          <div class="photo-frame-runes" aria-hidden="true">
+            <!-- Runas decorativas alrededor del marco -->
+            <span class="rune rune-tl">ᚠ</span>
+            <span class="rune rune-tr">ᚢ</span>
+            <span class="rune rune-bl">ᚦ</span>
+            <span class="rune rune-br">ᚨ</span>
+          </div>
+        </div>
+        <!-- /profile-photo-frame -->
+
+        <!-- Texto de perfil -->
+        <div class="profile-text">
+
+          <!-- 📝 EDITAR: Nombre y pronouns del artista -->
+          <h3 class="profile-name">GRANATTE <span class="profile-pronoun">(ella/her)</span></h3>
+
+          <!-- 📝 EDITAR: Lugar de origen / ubicación -->
+          <p class="profile-location">
+            <span aria-hidden="true">⊕</span>
+            Ciudad Submarina, 2024
+          </p>
+
+          <!-- Carta natal / datos astrológicos del artista -->
+          <!-- 📝 EDITAR: Cambia los signos y datos astrológicos -->
+          <div class="astro-chart" role="region" aria-label="Carta astral">
+            <div class="astro-item">
+              <span class="astro-icon" title="Sol">☉</span>
+              <span class="astro-label">Sol</span>
+              <span class="astro-value">Escorpio</span>
+            </div>
+            <div class="astro-item">
+              <span class="astro-icon" title="Luna">☽</span>
+              <span class="astro-label">Luna</span>
+              <span class="astro-value">Piscis</span>
+            </div>
+            <div class="astro-item">
+              <span class="astro-icon" title="Ascendente">↑</span>
+              <span class="astro-label">Asc.</span>
+              <span class="astro-value">Cáncer</span>
+            </div>
+          </div>
+
+          <!-- Bio larga -->
+          <!-- 📝 EDITAR: Escribe tu bio aquí. Puedes usar <br/> para saltos de línea -->
+          <div class="bio-text">
+            <p>
+              Artista sonora emergente que habita en el umbral entre lo visible y lo sumergido.
+              Su música nace de rituales nocturnos junto al agua: invocaciones mezcladas con
+              síntesis analógica, voces que imitan el lenguaje de las profundidades.
+            </p>
+            <p>
+              Criada entre libros de botánica mágica y cassettes de música electrónica,
+              construyó su primer sintetizador a los dieciséis años con piezas rescatadas
+              del mercado de pulgas. Desde entonces, sus tracks son archivos acústicos
+              de experiencias que no tienen nombre en ningún idioma humano.
+            </p>
+            <p>
+              Cada canción es un hechizo. Cada álbum, un libro de horas.
+            </p>
+          </div>
+
+        </div>
+        <!-- /profile-text -->
+
+      </div>
+      <!-- /profile-layout -->
+
+    </section>
+    <!-- /profile -->
+
+
+    <!-- ══════════════════════════════════════
+         SECCIÓN 3: TRAYECTORIA / LA TRAVESÍA
+         Línea de tiempo de la carrera.
+         ══════════════════════════════════════ -->
+    <section id="trajectory" class="section section-trajectory" aria-labelledby="trajectory-title">
+
+      <div class="section-header">
+        <span class="section-rune" aria-hidden="true">⊕</span>
+        <h2 id="trajectory-title" class="section-title">La Travesía</h2>
+        <span class="section-subtitle">— Trayectoria —</span>
+      </div>
+
+      <!--
+        LÍNEA DE TIEMPO VERTICAL
+        Cada .timeline-item es un evento de la carrera.
+        📝 EDITAR: Añade/modifica/elimina <article> según tu historial.
+        La clase "active" en el primer item lo marca como el más relevante.
+      -->
+      <div class="timeline" role="list" aria-label="Línea de tiempo artística">
+
+        <!-- Ítem de ejemplo — 📝 EDITAR cada uno -->
+        <article class="timeline-item active" role="listitem">
+          <div class="timeline-dot" aria-hidden="true">
+            <span class="dot-inner">✦</span>
+          </div>
+          <div class="timeline-content">
+            <time class="timeline-date" datetime="2024">2024</time>
+            <h3 class="timeline-event">Primer EP: «Abyssal Tide»</h3>
+            <p class="timeline-desc">
+              Lanzamiento digital de su EP debut. Cinco tracks grabados en vivo
+              en una cabaña sin electricidad de red, usando sólo equipos a batería
+              y un micrófono sumergible.
+            </p>
+            <!-- 📝 EDITAR: Agrega etiquetas de hitos -->
+            <div class="timeline-tags">
+              <span class="tag">EP</span>
+              <span class="tag">Debut</span>
+              <span class="tag">Electrónica ritual</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="timeline-item" role="listitem">
+          <div class="timeline-dot" aria-hidden="true">
+            <span class="dot-inner">◈</span>
+          </div>
+          <div class="timeline-content">
+            <time class="timeline-date" datetime="2023">2023</time>
+            <h3 class="timeline-event">Residencia en Estudio del Abismo</h3>
+            <p class="timeline-desc">
+              Seleccionada para una residencia artística de tres meses donde
+              exploró la síntesis granular y la bioacústica marina como base
+              compositiva.
+            </p>
+            <div class="timeline-tags">
+              <span class="tag">Residencia</span>
+              <span class="tag">Investigación sonora</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="timeline-item" role="listitem">
+          <div class="timeline-dot" aria-hidden="true">
+            <span class="dot-inner">⋆</span>
+          </div>
+          <div class="timeline-content">
+            <time class="timeline-date" datetime="2022">2022</time>
+            <h3 class="timeline-event">Instalación «Marea Negra» en Sala Ritual</h3>
+            <p class="timeline-desc">
+              Obra de arte sonoro inmersivo: un cuarto oscuro inundado de sonidos
+              subacuáticos y proyecciones del fondo del océano, visitado por 800
+              personas en una semana.
+            </p>
+            <div class="timeline-tags">
+              <span class="tag">Arte sonoro</span>
+              <span class="tag">Instalación</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="timeline-item" role="listitem">
+          <div class="timeline-dot" aria-hidden="true">
+            <span class="dot-inner">☽</span>
+          </div>
+          <div class="timeline-content">
+            <time class="timeline-date" datetime="2020">2020</time>
+            <h3 class="timeline-event">Primeras composiciones en cuarentena</h3>
+            <p class="timeline-desc">
+              El aislamiento se convirtió en laboratorio. Más de 40 piezas grabadas
+              con lo que había: una voz, un teclado viejo y el sonido de la lluvia
+              en la ventana.
+            </p>
+            <div class="timeline-tags">
+              <span class="tag">Origen</span>
+              <span class="tag">Composición</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- 📝 EDITAR: Añade más artículos siguiendo el mismo patrón -->
+
+      </div>
+      <!-- /timeline -->
+
+    </section>
+    <!-- /trajectory -->
+
+
+    <!-- ══════════════════════════════════════
+         SECCIÓN 4: PROYECTO / EL GRIMORIO
+         Descripción del proyecto artístico.
+         ══════════════════════════════════════ -->
+    <section id="project" class="section section-project" aria-labelledby="project-title">
+
+      <div class="section-header">
+        <span class="section-rune" aria-hidden="true">⋆</span>
+        <h2 id="project-title" class="section-title">El Grimorio</h2>
+        <span class="section-subtitle">— El Proyecto —</span>
+      </div>
+
+      <!-- Contenedor del grimorio con efecto página -->
+      <div class="grimoire-layout">
+
+        <!-- Página izquierda: símbolo / ilustración -->
+        <div class="grimoire-page grimoire-left" aria-hidden="true">
+          <div class="grimoire-sigil-container">
+            <!-- SVG del sigil central del proyecto -->
+            <svg viewBox="0 0 300 300" class="grimoire-sigil" aria-hidden="true">
+              <!-- Círculo base -->
+              <circle cx="150" cy="150" r="140" fill="none"
+                      stroke="rgba(150,100,255,0.3)" stroke-width="1"/>
+              <!-- Triángulo ascendente (fuego/espiritualidad) -->
+              <polygon points="150,30 270,240 30,240"
+                       fill="none" stroke="rgba(200,150,255,0.4)" stroke-width="0.8"/>
+              <!-- Triángulo descendente (agua/inconsciente) -->
+              <polygon points="150,270 30,60 270,60"
+                       fill="none" stroke="rgba(0,200,220,0.4)" stroke-width="0.8"/>
+              <!-- Hexagrama de David / Estrella del Mar -->
+              <!-- (resultado de superponer los dos triángulos) -->
+              <!-- Círculo central con ojo -->
+              <circle cx="150" cy="150" r="20" fill="rgba(100,50,200,0.2)"
+                      stroke="rgba(180,100,255,0.6)" stroke-width="1"/>
+              <ellipse cx="150" cy="150" rx="8" ry="12"
+                       fill="rgba(100,50,200,0.5)" stroke="rgba(200,150,255,0.8)" stroke-width="0.5"/>
+              <circle cx="150" cy="148" r="3" fill="rgba(255,220,150,0.9)"/>
+              <!-- Runas en el círculo exterior (cada 30°) -->
+              <g font-size="10" fill="rgba(180,140,255,0.6)" text-anchor="middle">
+                <text transform="rotate(-90 150 150) translate(0 -125)" x="150" y="150">ᚠ</text>
+                <text transform="rotate(-60 150 150) translate(0 -125)" x="150" y="150">ᚢ</text>
+                <text transform="rotate(-30 150 150) translate(0 -125)" x="150" y="150">ᚦ</text>
+                <text transform="rotate(0 150 150) translate(0 -125)"   x="150" y="150">ᚨ</text>
+                <text transform="rotate(30 150 150) translate(0 -125)"  x="150" y="150">ᚱ</text>
+                <text transform="rotate(60 150 150) translate(0 -125)"  x="150" y="150">ᚲ</text>
+                <text transform="rotate(90 150 150) translate(0 -125)"  x="150" y="150">ᚷ</text>
+                <text transform="rotate(120 150 150) translate(0 -125)" x="150" y="150">ᚹ</text>
+                <text transform="rotate(150 150 150) translate(0 -125)" x="150" y="150">ᚺ</text>
+                <text transform="rotate(180 150 150) translate(0 -125)" x="150" y="150">ᚾ</text>
+                <text transform="rotate(210 150 150) translate(0 -125)" x="150" y="150">ᛁ</text>
+                <text transform="rotate(240 150 150) translate(0 -125)" x="150" y="150">ᛃ</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Página derecha: texto del proyecto -->
+        <div class="grimoire-page grimoire-right">
+          <!--
+            📝 EDITAR: Reemplaza todo el texto entre las etiquetas
+            con la descripción real de tu proyecto artístico.
+          -->
+          <h3 class="grimoire-project-title">«Sirenas del Antropoceno»</h3>
+          <p class="grimoire-text">
+            Un proyecto discográfico en tres actos que mapea la degradación
+            del océano a través de música electrónica ritual. Cada track es
+            una especie marina que desaparece; cada silencio, una extinción.
+          </p>
+          <p class="grimoire-text">
+            La propuesta fusiona field recordings submarinos, síntesis modular
+            y rituales sonoros inspirados en tradiciones de brujería costera
+            del Atlántico Sur. El resultado es un álbum-hechizo: un documento
+            acústico y un conjuro para despertar.
+          </p>
+
+          <!-- Desglose de los tres actos -->
+          <!-- 📝 EDITAR: Nombres y descripciones de los actos/capítulos -->
+          <div class="project-acts">
+            <div class="act-item">
+              <span class="act-num" aria-hidden="true">I</span>
+              <div>
+                <strong class="act-name">Invocación</strong>
+                <p class="act-desc">El llamado. Sonidos de génesis y marea alta.</p>
+              </div>
+            </div>
+            <div class="act-item">
+              <span class="act-num" aria-hidden="true">II</span>
+              <div>
+                <strong class="act-name">Descenso</strong>
+                <p class="act-desc">El viaje al fondo. Oscuridad bioluminiscente.</p>
+              </div>
+            </div>
+            <div class="act-item">
+              <span class="act-num" aria-hidden="true">III</span>
+              <div>
+                <strong class="act-name">Resurrección</strong>
+                <p class="act-desc">El regreso transformado. Agua y fuego.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cita destacada -->
+          <blockquote class="grimoire-quote">
+            "No soy yo quien canta.<br/>
+            El océano me usa de boca."
+          </blockquote>
+
+        </div>
+        <!-- /grimoire-right -->
+
+      </div>
+      <!-- /grimoire-layout -->
+
+    </section>
+    <!-- /project -->
+
+
+    <!-- ══════════════════════════════════════
+         SECCIÓN 5: PORTAFOLIO / LAS VISIONES
+         Galería fotográfica animada.
+         ══════════════════════════════════════ -->
+    <section id="portfolio" class="section section-portfolio" aria-labelledby="portfolio-title">
+
+      <div class="section-header">
+        <span class="section-rune" aria-hidden="true">✦</span>
+        <h2 id="portfolio-title" class="section-title">Las Visiones</h2>
+        <span class="section-subtitle">— Portafolio —</span>
+      </div>
+
+      <!--
+        GALERÍA MASONRY (rejilla irregular al estilo portafolio)
+        Cada .gallery-item tiene:
+          · data-category: filtra por categoría (press | live | art | studio)
+          · Un <figure> con <img> y <figcaption>
+
+        📝 EDITAR: Reemplaza los src="" de cada <img> con tus fotos reales.
+        Tamaño recomendado: al menos 800px en el eje más largo.
+        Formatos: JPG (fotos), PNG (arte), WebP (óptimo para web).
+
+        CÓMO AÑADIR UNA FOTO NUEVA:
+        1. Copia un bloque .gallery-item completo
+        2. Cambia src, alt, figcaption y data-category
+        3. Pégalo en la galería — el CSS masonry se acomoda solo
+      -->
+
+      <!-- Filtros de categoría -->
+      <div class="gallery-filters" role="group" aria-label="Filtrar portafolio">
+        <button class="filter-btn active" data-filter="all" aria-pressed="true">Todas</button>
+        <button class="filter-btn" data-filter="press" aria-pressed="false">Prensa</button>
+        <button class="filter-btn" data-filter="live" aria-pressed="false">En Vivo</button>
+        <button class="filter-btn" data-filter="art" aria-pressed="false">Arte</button>
+        <button class="filter-btn" data-filter="studio" aria-pressed="false">Estudio</button>
+      </div>
+
+      <!-- Grilla de la galería -->
+      <div class="gallery-grid" id="gallery-grid" role="list" aria-label="Galería fotográfica">
+
+        <!-- ── FOTO 1 ── -->
+        <!--
+          📝 EDITAR foto 1:
+          · src="assets/images/foto-1.jpg" → ruta a tu imagen
+          · alt="" → descripción accesible de la foto
+          · <figcaption> → pie de foto visible
+          · data-category="press" → categoría para el filtro
+        -->
+        <div class="gallery-item gallery-item--large" data-category="press" role="listitem">
+          <figure class="gallery-figure">
+            <!-- Placeholder hasta que pongas tu foto real -->
+            <div class="img-placeholder" role="img" aria-label="Foto de prensa 1 — placeholder">
+              <div class="placeholder-content">
+                <span class="placeholder-icon">📸</span>
+                <span class="placeholder-text">Press Shot 01</span>
+                <span class="placeholder-size">1200 × 1600 px</span>
+              </div>
+            </div>
+            
+            <img src="assets/images/escenario.jpg"
+                 alt="GRANATTE en sesión de prensa, iluminada por luz de luna azul"
+                 loading="lazy">
+           
+            <figcaption class="gallery-caption">
+              <span class="caption-title">Press Shot · 2024</span>
+              <span class="caption-cat">Prensa</span>
+            </figcaption>
+          </figure>
+          <!-- Efecto hover: overlay con zoom 3D (ver ui.js) -->
+          <div class="gallery-overlay" aria-hidden="true">
+            <span class="overlay-zoom">⊕</span>
+          </div>
+        </div>
+
+        <!-- ── FOTO 2 ── -->
+        <div class="gallery-item" data-category="live" role="listitem">
+          <figure class="gallery-figure">
+            <div class="img-placeholder" role="img" aria-label="Foto en vivo 1 — placeholder">
+              <div class="placeholder-content">
+                <span class="placeholder-icon">🎤</span>
+                <span class="placeholder-text">Live 01</span>
+                <span class="placeholder-size">800 × 1000 px</span>
+              </div>
+            </div>
+            <figcaption class="gallery-caption">
+              <span class="caption-title">En Vivo · Sala Ritual</span>
+              <span class="caption-cat">Live</span>
+            </figcaption>
+          </figure>
+          <div class="gallery-overlay" aria-hidden="true">
+            <span class="overlay-zoom">⊕</span>
+          </div>
+        </div>
+
+        <!-- ── FOTO 3 ── -->
+        <div class="gallery-item" data-category="art" role="listitem">
+          <figure class="gallery-figure">
+            <div class="img-placeholder" role="img" aria-label="Arte visual 1 — placeholder">
+              <div class="placeholder-content">
+                <span class="placeholder-icon">🔮</span>
+                <span class="placeholder-text">Art Direction 01</span>
+                <span class="placeholder-size">1000 × 1000 px</span>
+              </div>
+            </div>
+            <figcaption class="gallery-caption">
+              <span class="caption-title">Dirección de Arte</span>
+              <span class="caption-cat">Arte</span>
+            </figcaption>
+          </figure>
+          <div class="gallery-overlay" aria-hidden="true">
+            <span class="overlay-zoom">⊕</span>
+          </div>
+        </div>
+
+        <!-- ── FOTO 4 ── -->
+        <div class="gallery-item gallery-item--tall" data-category="studio" role="listitem">
+          <figure class="gallery-figure">
+            <div class="img-placeholder" role="img" aria-label="Foto en estudio — placeholder">
+              <div class="placeholder-content">
+                <span class="placeholder-icon">🎛️</span>
+                <span class="placeholder-text">Studio Session</span>
+                <span class="placeholder-size">800 × 1200 px</span>
+              </div>
+            </div>
+            <figcaption class="gallery-caption">
+              <span class="caption-title">Sesión de Estudio</span>
+              <span class="caption-cat">Estudio</span>
+            </figcaption>
+          </figure>
+          <div class="gallery-overlay" aria-hidden="true">
+            <span class="overlay-zoom">⊕</span>
+          </div>
+        </div>
+
+        <!-- ── FOTO 5 ── -->
+        <div class="gallery-item" data-category="live" role="listitem">
+          <figure class="gallery-figure">
+            <div class="img-placeholder" role="img" aria-label="Foto en vivo 2 — placeholder">
+              <div class="placeholder-content">
+                <span class="placeholder-icon">🎤</span>
+                <span class="placeholder-text">Live 02</span>
+                <span class="placeholder-size">900 × 700 px</span>
+              </div>
+            </div>
+            <figcaption class="gallery-caption">
+              <span class="caption-title">Festival Mareas · 2023</span>
+              <span class="caption-cat">Live</span>
+            </figcaption>
+          </figure>
+          <div class="gallery-overlay" aria-hidden="true">
+            <span class="overlay-zoom">⊕</span>
+          </div>
+        </div>
+
+        <!-- ── FOTO 6 ── -->
+        <div class="gallery-item" data-category="press" role="listitem">
+          <figure class="gallery-figure">
+            <div class="img-placeholder" role="img" aria-label="Foto de prensa 2 — placeholder">
+              <div class="placeholder-content">
+                <span class="placeholder-icon">📷</span>
+                <span class="placeholder-text">Press Shot 02</span>
+                <span class="placeholder-size">800 × 1000 px</span>
+              </div>
+            </div>
+            <figcaption class="gallery-caption">
+              <span class="caption-title">Press Shot · 2023</span>
+              <span class="caption-cat">Prensa</span>
+            </figcaption>
+          </figure>
+          <div class="gallery-overlay" aria-hidden="true">
+            <span class="overlay-zoom">⊕</span>
+          </div>
+        </div>
+
+        <!-- ── FOTO 7 ── -->
+        <div class="gallery-item gallery-item--wide" data-category="art" role="listitem">
+          <figure class="gallery-figure">
+            <div class="img-placeholder" role="img" aria-label="Arte visual 2 — placeholder">
+              <div class="placeholder-content">
+                <span class="placeholder-icon">🌊</span>
+                <span class="placeholder-text">Conceptual Art 01</span>
+                <span class="placeholder-size">1600 × 900 px</span>
+              </div>
+            </div>
+            <figcaption class="gallery-caption">
+              <span class="caption-title">«Marea Negra» · Serie visual</span>
+              <span class="caption-cat">Arte</span>
+            </figcaption>
+          </figure>
+          <div class="gallery-overlay" aria-hidden="true">
+            <span class="overlay-zoom">⊕</span>
+          </div>
+        </div>
+
+        <!-- ── FOTO 8 ── -->
+        <div class="gallery-item" data-category="studio" role="listitem">
+          <figure class="gallery-figure">
+            <div class="img-placeholder" role="img" aria-label="Estudio 2 — placeholder">
+              <div class="placeholder-content">
+                <span class="placeholder-icon">🔊</span>
+                <span class="placeholder-text">Studio 02</span>
+                <span class="placeholder-size">800 × 600 px</span>
+              </div>
+            </div>
+            <figcaption class="gallery-caption">
+              <span class="caption-title">Grabación · Abyssal Studios</span>
+              <span class="caption-cat">Estudio</span>
+            </figcaption>
+          </figure>
+          <div class="gallery-overlay" aria-hidden="true">
+            <span class="overlay-zoom">⊕</span>
+          </div>
+        </div>
+
+      </div>
+      <!-- /gallery-grid -->
+
+      <!-- Lightbox para ver fotos grandes — controlado por ui.js -->
+      <!--
+        El lightbox se inserta dinámicamente por JavaScript (ver ui.js → initLightbox()).
+        No necesitas editarlo aquí. El usuario hace click en cualquier foto
+        y aparece en pantalla completa con efecto de apertura 3D.
+      -->
+
+    </section>
+    <!-- /portfolio -->
+
+
+    <!-- ══════════════════════════════════════
+         SECCIÓN 6: MÚSICA / LAS MAREAS
+         Reproductor SoundCloud embebido + tracks individuales.
+
+         ── CÓMO OBTENER EL EMBED DE SOUNDCLOUD ──────────────────
+         1. Ve a tu perfil o track en soundcloud.com
+         2. Haz click en "Share" (compartir) → pestaña "Embed"
+         3. Copia el código <iframe> que te da
+         4. Pégalo en los bloques marcados con 📝 EDITAR abajo
+         5. Personaliza: color=, visual=true/false, show_artwork=true
+            en la URL del src del iframe
+
+         PARÁMETROS ÚTILES del widget URL de SoundCloud:
+         · color=%236b3fa0     → color de los controles (hex sin #, con %23)
+         · auto_play=false     → no reproducir al cargar
+         · hide_related=true   → ocultar tracks relacionados
+         · show_comments=false → ocultar comentarios
+         · show_user=true      → mostrar nombre del artista
+         · visual=true         → modo visual grande (portada de fondo)
+         · show_artwork=true   → mostrar portada del track
+         ══════════════════════════════════════ -->
+    <section id="music" class="section section-music" aria-labelledby="music-title">
+
+      <div class="section-header">
+        <span class="section-rune" aria-hidden="true">♆</span>
+        <h2 id="music-title" class="section-title">Las Mareas</h2>
+        <span class="section-subtitle">— Música —</span>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════════
+           REPRODUCTOR PRINCIPAL — PERFIL COMPLETO DE SOUNDCLOUD
+           ══════════════════════════════════════════════════════════
+           Cómo funciona el widget de SoundCloud:
+           · El src usa la URL pública del perfil codificada en %3A//
+           · color=%236b3fa0 → color morado de los controles (hex sin #)
+           · visual=true     → modo grande con portada de fondo
+           · auto_play=false → no arranca sólo al cargar la página
+           · hide_related=true → no muestra tracks de otros artistas
+           · show_user=true  → muestra el nombre del artista
+
+           📝 EDITAR: Si cambia la URL del perfil, actualiza SOLO
+           la parte después de "url=" hasta el primer "&"
+      ══════════════════════════════════════════════════════════ -->
+      <div class="soundcloud-main-player">
+
+        <div class="sc-player-label">
+          <span class="sc-icon" aria-hidden="true">♆</span>
+          Andrea Montoya en SoundCloud
+        </div>
+
+        <!--
+          Widget de SoundCloud en modo "visual" (grande, con portada).
+          La URL del perfil está codificada: los "://" se escriben como "%3A//"
+          porque va dentro de otro parámetro URL (url=https%3A//soundcloud.com/...)
+        -->
+        <iframe
+          class="sc-main-iframe"
+          scrolling="no"
+          frameborder="no"
+          allow="autoplay"
+          title="Reproductor SoundCloud — Andrea Montoya"
+          src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/andrea-montoya-159212528&color=%236b3fa0&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false&visual=true">
+        </iframe>
+
+        <!-- Link directo al perfil externo -->
+        <div class="sc-profile-link">
+          <a href="https://soundcloud.com/andrea-montoya-159212528"
+             target="_blank"
+             rel="noopener noreferrer"
+             class="track-link-external"
+             aria-label="Ver perfil completo en SoundCloud (abre en nueva pestaña)">
+            <span aria-hidden="true">♆</span> Ver perfil en SoundCloud
+          </a>
+        </div>
+
+      </div>
+      <!-- /soundcloud-main-player -->
+
+
+      <!-- ══════════════════════════════════════════════════════════
+           TRACKS INDIVIDUALES
+           Cada card tiene su propio widget embed de SoundCloud
+           en modo compacto (sin visual=true → barra horizontal).
+
+           📝 CÓMO AÑADIR UN TRACK REAL:
+           1. Ve a soundcloud.com/andrea-montoya-159212528
+           2. Abre el track que quieras
+           3. Clic en "Share" → pestaña "Embed"
+           4. Copia la URL del src (la parte larga con w.soundcloud.com/...)
+           5. Pégala en el atributo src="" del iframe de abajo
+           6. Cambia también el título h3 y los tags
+
+           📝 CÓMO CAMBIAR EL COLOR del widget:
+           En la URL del src, edita: color=%236b3fa0
+           Formato: %23 + hex sin # (ej: %2322d3ee para cian)
+      ══════════════════════════════════════════════════════════ -->
+      <div class="tracks-container" role="list" aria-label="Lista de tracks">
+
+        <!-- ── TRACK 1 ──
+             📝 EDITAR: Reemplaza el src con el embed de tu track real.
+             El src actual es un placeholder que carga el perfil completo.
+             Para un track específico el src sería:
+             https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/andrea-montoya-159212528/NOMBRE-DEL-TRACK&...
+        -->
+        <div class="track-card track-card--embed" role="listitem" data-track="1">
+
+          <!-- Info del track (lado izquierdo) -->
+          <div class="track-info">
+            <!-- 📝 EDITAR: Nombre real del track -->
+            <h3 class="track-title">Track 01</h3>
+            <div class="track-tags">
+              <!-- 📝 EDITAR: Géneros del track -->
+              <span class="tag">Electrónica</span>
+            </div>
+            <!-- Link directo al track en SC -->
+            <a href="https://soundcloud.com/andrea-montoya-159212528"
+               class="track-link-external"
+               target="_blank" rel="noopener noreferrer"
+               aria-label="Abrir en SoundCloud">
+              <span aria-hidden="true">♆</span> SoundCloud
+            </a>
+          </div>
+
+          <!-- Widget embed de SoundCloud (modo compacto, barra) -->
+          <div class="track-sc-embed">
+            <!--
+              Para este track individual, cuando tengas la URL del track:
+              1. Cambia "andrea-montoya-159212528" por tu usuario
+              2. Añade "/nombre-del-track" al final de la URL del perfil en src
+              Ejemplo:
+              url=https%3A//soundcloud.com/andrea-montoya-159212528/mi-primer-track
+            -->
+            <iframe
+              class="sc-track-iframe"
+              scrolling="no"
+              frameborder="no"
+              allow="autoplay"
+              title="Track 01 de Andrea Montoya"
+              src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/andrea-montoya-159212528&color=%236b3fa0&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false">
+            </iframe>
+          </div>
+
+        </div>
+        <!-- /track 1 -->
+
+        <!-- ── TRACK 2 ── -->
+        <div class="track-card track-card--embed" role="listitem" data-track="2">
+          <div class="track-info">
+            <h3 class="track-title">Track 02</h3>
+            <div class="track-tags">
+              <span class="tag">Ambient</span>
+            </div>
+            <a href="https://soundcloud.com/andrea-montoya-159212528"
+               class="track-link-external"
+               target="_blank" rel="noopener noreferrer">
+              <span aria-hidden="true">♆</span> SoundCloud
+            </a>
+          </div>
+          <div class="track-sc-embed">
+            <!-- 📝 EDITAR: Cambia este src por el del track 2 real -->
+            <iframe
+              class="sc-track-iframe"
+              scrolling="no"
+              frameborder="no"
+              allow="autoplay"
+              title="Track 02 de Andrea Montoya"
+              src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/andrea-montoya-159212528&color=%2322d3ee&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false">
+            </iframe>
+          </div>
+        </div>
+
+        <!-- ── TRACK 3 ── -->
+        <div class="track-card track-card--embed" role="listitem" data-track="3">
+          <div class="track-info">
+            <h3 class="track-title">Track 03</h3>
+            <div class="track-tags">
+              <span class="tag">Experimental</span>
+            </div>
+            <a href="https://soundcloud.com/andrea-montoya-159212528"
+               class="track-link-external"
+               target="_blank" rel="noopener noreferrer">
+              <span aria-hidden="true">♆</span> SoundCloud
+            </a>
+          </div>
+          <div class="track-sc-embed">
+            <!-- 📝 EDITAR: Cambia este src por el del track 3 real -->
+            <iframe
+              class="sc-track-iframe"
+              scrolling="no"
+              frameborder="no"
+              allow="autoplay"
+              title="Track 03 de Andrea Montoya"
+              src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/andrea-montoya-159212528&color=%236b3fa0&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false">
+            </iframe>
+          </div>
+        </div>
+
+        <!--
+          📝 AÑADIR MÁS TRACKS:
+          Copia el bloque .track-card--embed de arriba completo,
+          cambia el número (data-track="4"), el título, los tags
+          y el src del iframe.
+        -->
+
+      </div>
+      <!-- /tracks-container -->
+
+    </section>
+    <!-- /music -->
+
+
+    <!-- ══════════════════════════════════════
+         SECCIÓN 7: CONTACTO / EL ORÁCULO
+         Formulario y redes sociales.
+         ══════════════════════════════════════ -->
+    <section id="contact" class="section section-contact" aria-labelledby="contact-title">
+
+      <div class="section-header">
+        <span class="section-rune" aria-hidden="true">☿</span>
+        <h2 id="contact-title" class="section-title">El Oráculo</h2>
+        <span class="section-subtitle">— Contacto —</span>
+      </div>
+
+      <div class="contact-layout">
+
+        <!-- Panel izquierdo: redes sociales -->
+        <div class="contact-social">
+          <h3 class="contact-social-title">Encuéntrame en el éter</h3>
+
+          <!--
+            📝 EDITAR: Cambia los href="#" por tus links reales de redes sociales.
+            Añade/elimina <li> según tus plataformas activas.
+          -->
+          <ul class="social-list" role="list">
+            <li>
+              <a href="#" class="social-link" target="_blank" rel="noopener noreferrer"
+                 aria-label="Instagram (abre en nueva pestaña)">
+                <span class="social-icon" aria-hidden="true">◎</span>
+                <span class="social-platform">Instagram</span>
+                <!-- 📝 EDITAR: Tu @handle -->
+                <span class="social-handle">@GRANATTE.sounds</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="social-link" target="_blank" rel="noopener noreferrer"
+                 aria-label="Bandcamp (abre en nueva pestaña)">
+                <span class="social-icon" aria-hidden="true">⊛</span>
+                <span class="social-platform">Bandcamp</span>
+                <span class="social-handle">GRANATTE.bandcamp.com</span>
+              </a>
+            </li>
+            <li>
+              <!-- 📝 URL real de SoundCloud conectada -->
+              <a href="https://soundcloud.com/andrea-montoya-159212528"
+                 class="social-link" target="_blank" rel="noopener noreferrer"
+                 aria-label="SoundCloud de Andrea Montoya (abre en nueva pestaña)">
+                <span class="social-icon" aria-hidden="true">♆</span>
+                <span class="social-platform">SoundCloud</span>
+                <span class="social-handle">andrea-montoya-159212528</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="social-link" target="_blank" rel="noopener noreferrer"
+                 aria-label="Spotify (abre en nueva pestaña)">
+                <span class="social-icon" aria-hidden="true">⋆</span>
+                <span class="social-platform">Spotify</span>
+                <span class="social-handle">GRANATTE Artist</span>
+              </a>
+            </li>
+          </ul>
+
+          <!-- 📝 EDITAR: Email de contacto -->
+          <a href="mailto:contacto@GRANATTE-music.com" class="contact-email">
+            <span aria-hidden="true">✉</span>
+            contacto@GRANATTE-music.com
+          </a>
+        </div>
+        <!-- /contact-social -->
+
+        <!-- Panel derecho: formulario de contacto -->
+        <div class="contact-form-container">
+          <h3 class="contact-form-title">Envía un mensaje al abismo</h3>
+
+          <!--
+            FORMULARIO DE CONTACTO
+            Por defecto usa action="#" (no envía).
+            📝 EDITAR para conectar a un servicio real:
+            · Formspree: action="https://formspree.io/f/TU-ID" method="POST"
+            · Netlify:   añade el atributo data-netlify="true"
+            · EmailJS:   ver comentarios en ui.js → initContactForm()
+          -->
+          <form class="contact-form" id="contact-form" action="#" method="POST"
+                novalidate aria-label="Formulario de contacto">
+
+            <div class="form-group">
+              <label for="contact-name" class="form-label">Tu nombre mortal</label>
+              <input type="text" id="contact-name" name="name"
+                     class="form-input" placeholder="¿Cómo debo llamarte?"
+                     required autocomplete="name" aria-required="true" />
+            </div>
+
+            <div class="form-group">
+              <label for="contact-email" class="form-label">Tu correo en el éter</label>
+              <input type="email" id="contact-email" name="email"
+                     class="form-input" placeholder="tu@correo.com"
+                     required autocomplete="email" aria-required="true" />
+            </div>
+
+            <!-- 📝 EDITAR: Opciones del select según tus necesidades -->
+            <div class="form-group">
+              <label for="contact-subject" class="form-label">Naturaleza del mensaje</label>
+              <select id="contact-subject" name="subject" class="form-select" aria-required="true">
+                <option value="">— Elige una invocación —</option>
+                <option value="booking">Booking / Shows</option>
+                <option value="press">Prensa / Media</option>
+                <option value="collab">Colaboración</option>
+                <option value="licensing">Licencias</option>
+                <option value="other">Otro / Ritual libre</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="contact-message" class="form-label">El mensaje</label>
+              <textarea id="contact-message" name="message"
+                        class="form-textarea" rows="5"
+                        placeholder="Escribe aquí tu invocación..."
+                        required aria-required="true"></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit" aria-label="Enviar mensaje">
+              <span class="btn-submit-text">Invocar</span>
+              <span class="btn-submit-icon" aria-hidden="true">✦</span>
+            </button>
+
+            <!-- Mensaje de estado del envío (JS lo actualiza) -->
+            <p class="form-status" id="form-status" role="alert" aria-live="polite"></p>
+
+          </form>
+        </div>
+        <!-- /contact-form-container -->
+
+      </div>
+      <!-- /contact-layout -->
+
+    </section>
+    <!-- /contact -->
+
+
+    <!-- ══════════════════════════════════════
+         SECCIÓN 8: PORTAL — CREADOR MUSICAL
+         Enlace en pantalla completa a studio.html
+         ══════════════════════════════════════ -->
+    <section id="studio-portal" class="section section-studio-portal" aria-labelledby="studio-portal-title">
+
+      <div class="section-header">
+        <span class="section-rune" aria-hidden="true">🎹</span>
+        <h2 id="studio-portal-title" class="section-title">Creador Musical</h2>
+        <span class="section-subtitle">— Taller Sonoro —</span>
+      </div>
+
+      <!-- Descripción del creador musical -->
+      <div class="studio-portal-layout">
+
+        <!-- Panel izquierdo: descripción -->
+        <div class="studio-portal-text">
+          <h3 class="studio-portal-heading">Un instrumento para invocar sonidos</h3>
+          <p class="studio-portal-desc">
+            Entra al taller sonoro: un secuenciador de ritmos y un piano mágico
+            de acordes pensado para cualquier persona. No necesitas saber música.
+            Solo necesitas escuchar.
+          </p>
+          <ul class="studio-portal-features">
+            <li>
+              <span class="spf-icon" aria-hidden="true">🥁</span>
+              <span><strong>Batería de 16 pasos</strong> — 6 instrumentos con patrones preestablecidos</span>
+            </li>
+            <li>
+              <span class="spf-icon" aria-hidden="true">🪄</span>
+              <span><strong>Piano mágico</strong> — 8 acordes por escala, 4 escalas temáticas</span>
+            </li>
+            <li>
+              <span class="spf-icon" aria-hidden="true">🎸</span>
+              <span><strong>Bajo automático</strong> — sigue tu acorde con 3 patrones rítmicos</span>
+            </li>
+            <li>
+              <span class="spf-icon" aria-hidden="true">🤚</span>
+              <span><strong>Manos mágicas</strong> — toca con gestos frente a la cámara</span>
+            </li>
+            <li>
+              <span class="spf-icon" aria-hidden="true">⬇️</span>
+              <span><strong>Descarga en MP3</strong> — guarda tu creación al instante</span>
+            </li>
+          </ul>
+
+          <!-- Botón principal de acceso -->
+          <a href="studio.html" class="btn-enter-studio" target="_blank" rel="noopener"
+             aria-label="Abrir el Creador Musical en pantalla completa (nueva pestaña)">
+            <span class="btn-es-icon" aria-hidden="true">✦</span>
+            Abrir Creador Musical
+            <span class="btn-es-arrow" aria-hidden="true">→</span>
+          </a>
+
+          <p class="studio-portal-note">
+            Se abre en pantalla completa · Sin instalación
+          </p>
+        </div>
+
+        <!-- Panel derecho: preview visual animado -->
+        <div class="studio-portal-preview" aria-hidden="true">
+          <!-- Simulación visual del secuenciador -->
+          <div class="preview-sequencer">
+            <!-- 5 filas × 8 pasos como miniatura decorativa -->
+            <div class="preview-seq-row">
+              <div class="preview-step on"  style="--sc:#7c3aed"></div>
+              <div class="preview-step"     style="--sc:#7c3aed"></div>
+              <div class="preview-step"     style="--sc:#7c3aed"></div>
+              <div class="preview-step"     style="--sc:#7c3aed"></div>
+              <div class="preview-step on"  style="--sc:#7c3aed"></div>
+              <div class="preview-step"     style="--sc:#7c3aed"></div>
+              <div class="preview-step"     style="--sc:#7c3aed"></div>
+              <div class="preview-step"     style="--sc:#7c3aed"></div>
+            </div>
+            <div class="preview-seq-row">
+              <div class="preview-step"     style="--sc:#1d4ed8"></div>
+              <div class="preview-step"     style="--sc:#1d4ed8"></div>
+              <div class="preview-step"     style="--sc:#1d4ed8"></div>
+              <div class="preview-step"     style="--sc:#1d4ed8"></div>
+              <div class="preview-step on"  style="--sc:#1d4ed8"></div>
+              <div class="preview-step"     style="--sc:#1d4ed8"></div>
+              <div class="preview-step"     style="--sc:#1d4ed8"></div>
+              <div class="preview-step"     style="--sc:#1d4ed8"></div>
+            </div>
+            <div class="preview-seq-row">
+              <div class="preview-step on"  style="--sc:#0f766e"></div>
+              <div class="preview-step"     style="--sc:#0f766e"></div>
+              <div class="preview-step on"  style="--sc:#0f766e"></div>
+              <div class="preview-step"     style="--sc:#0f766e"></div>
+              <div class="preview-step on"  style="--sc:#0f766e"></div>
+              <div class="preview-step"     style="--sc:#0f766e"></div>
+              <div class="preview-step on"  style="--sc:#0f766e"></div>
+              <div class="preview-step"     style="--sc:#0f766e"></div>
+            </div>
+            <div class="preview-seq-row">
+              <div class="preview-step"     style="--sc:#9f1239"></div>
+              <div class="preview-step"     style="--sc:#9f1239"></div>
+              <div class="preview-step"     style="--sc:#9f1239"></div>
+              <div class="preview-step"     style="--sc:#9f1239"></div>
+              <div class="preview-step on"  style="--sc:#9f1239"></div>
+              <div class="preview-step"     style="--sc:#9f1239"></div>
+              <div class="preview-step"     style="--sc:#9f1239"></div>
+              <div class="preview-step"     style="--sc:#9f1239"></div>
+            </div>
+            <div class="preview-seq-row">
+              <div class="preview-step"     style="--sc:#78350f"></div>
+              <div class="preview-step"     style="--sc:#78350f"></div>
+              <div class="preview-step"     style="--sc:#78350f"></div>
+              <div class="preview-step"     style="--sc:#78350f"></div>
+              <div class="preview-step"     style="--sc:#78350f"></div>
+              <div class="preview-step"     style="--sc:#78350f"></div>
+              <div class="preview-step"     style="--sc:#78350f"></div>
+              <div class="preview-step on"  style="--sc:#78350f"></div>
+            </div>
+            <!-- Cursor animado que avanza como si estuviera reproduciendo -->
+            <div class="preview-cursor" id="preview-cursor"></div>
+          </div>
+
+          <!-- Mini "teclas" del piano decorativas -->
+          <div class="preview-piano">
+            <div class="preview-key" style="--kc:#6b21a8">Am</div>
+            <div class="preview-key" style="--kc:#1d4ed8">F</div>
+            <div class="preview-key" style="--kc:#0f766e">C</div>
+            <div class="preview-key" style="--kc:#0369a1">G</div>
+            <div class="preview-key" style="--kc:#7f1d1d">Em</div>
+            <div class="preview-key" style="--kc:#78350f">Dm</div>
+            <div class="preview-key" style="--kc:#4a1d96">E7</div>
+            <div class="preview-key" style="--kc:#1e3a5f">Am7</div>
+          </div>
+        </div>
+        <!-- /studio-portal-preview -->
+
+      </div>
+      <!-- /studio-portal-layout -->
+
+    </section>
+    <!-- /studio-portal -->
+
+
+    <!-- ══════════════════════════════════════
+         PIE DE PÁGINA
+         ══════════════════════════════════════ -->
+    <footer class="site-footer" role="contentinfo">
+      <!-- 📝 EDITAR: Año y nombre para el copyright -->
+      <p class="footer-copy">
+        © 2024 GRANATTE · Todos los derechos reservados bajo la luna
+      </p>
+      <p class="footer-made">
+        Hecho con síntesis modular y hechizos CSS
+      </p>
+      <!-- Símbolos decorativos del footer -->
+      <div class="footer-symbols" aria-hidden="true">
+        ☽ · ⊕ · ✦ · ♆ · ◈ · ⋆ · ☿
+      </div>
+    </footer>
+
+  </main>
+  <!-- /main-content -->
+
+
+  <!-- ──────────────────────────────────────────────────────────
+       SIDEBAR DERECHO (datos astrológicos y ornamentos)
+       Panel decorativo de la derecha, al estilo web retro.
+       Contiene el horóscopo del día y ornamentos visuales.
+       ────────────────────────────────────────────────────────── -->
+  <aside id="sidebar-right" aria-label="Panel esotérico">
+
+    <!-- Título del panel -->
+    <div class="sidebar-right-header">
+      <span class="sr-icon" aria-hidden="true">☽</span>
+      <span class="sr-title">Tránsitos</span>
+    </div>
+
+    <!-- FASE LUNAR ACTUAL -->
+    <!-- 📝 EDITAR: Actualiza la fase lunar y fecha manualmente
+         O conecta a una API de luna en assets/js/astro-data.js -->
+    <div class="moon-widget" role="region" aria-label="Fase lunar">
+      <div class="moon-visual" id="moon-phase" aria-hidden="true">
+        <!-- SVG de la luna — cambia el path para cambiar la fase visual -->
+        <!-- Luna llena = círculo completo. Menguante = semicírculo. -->
+        <svg viewBox="0 0 80 80" class="moon-svg">
+          <!-- Sombra del lado oscuro -->
+          <circle cx="40" cy="40" r="35" fill="rgba(10,8,30,0.95)"/>
+          <!-- Parte iluminada (luna creciente gibbosa) -->
+          <!-- Ajusta el path para la fase actual: -->
+          <!-- Luna llena:    <circle cx="40" cy="40" r="35" fill="#fffdf0"/> -->
+          <!-- Luna nueva:    (borra el path de abajo, solo queda el círculo oscuro) -->
+          <!-- Luna creciente: el path que está aquí -->
+          <path d="M 40 5 A 35 35 0 1 1 40 75 A 20 35 0 1 0 40 5"
+                fill="rgba(255,250,220,0.95)"/>
+          <!-- Brillos de la superficie lunar -->
+          <circle cx="30" cy="28" r="3" fill="rgba(255,255,200,0.3)"/>
+          <circle cx="50" cy="45" r="2" fill="rgba(255,255,200,0.2)"/>
+          <circle cx="35" cy="55" r="1.5" fill="rgba(255,255,200,0.25)"/>
+        </svg>
+      </div>
+      <p class="moon-label">Luna Creciente</p>
+      <!-- 📝 EDITAR: Fecha de la fase actual -->
+      <p class="moon-date">26 Oct · Escorpio</p>
+    </div>
+    <!-- /moon-widget -->
+
+    <!-- Separador -->
+    <div class="sr-divider" aria-hidden="true">── ✦ ──</div>
+
+    <!-- PLANETA EN TRÁNSITO -->
+    <!-- 📝 EDITAR: Actualiza los planetas y signos manualmente -->
+    <div class="transit-widget" role="region" aria-label="Planetas en tránsito">
+      <h4 class="transit-title">Planetas hoy</h4>
+      <ul class="transit-list" role="list">
+        <li class="transit-item">
+          <span class="t-planet" aria-label="Sol">☉</span>
+          <span class="t-sign">Escorpio</span>
+        </li>
+        <li class="transit-item">
+          <span class="t-planet" aria-label="Luna">☽</span>
+          <span class="t-sign">Capricornio</span>
+        </li>
+        <li class="transit-item">
+          <span class="t-planet" aria-label="Mercurio">☿</span>
+          <span class="t-sign">Escorpio</span>
+        </li>
+        <li class="transit-item">
+          <span class="t-planet" aria-label="Venus">♀</span>
+          <span class="t-sign">Sagitario</span>
+        </li>
+        <li class="transit-item">
+          <span class="t-planet" aria-label="Marte">♂</span>
+          <span class="t-sign">Leo</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Separador -->
+    <div class="sr-divider" aria-hidden="true">── ✦ ──</div>
+
+    <!-- CARTA TAROT DEL DÍA -->
+    <!-- 📝 EDITAR: Cambia la carta del tarot y su descripción -->
+    <div class="tarot-widget" role="region" aria-label="Carta del tarot del día">
+      <h4 class="tarot-title">Carta del Día</h4>
+      <div class="tarot-card" aria-label="La Sacerdotisa">
+        <div class="tarot-card-inner">
+          <!-- Frente de la carta -->
+          <div class="tarot-front">
+            <span class="tarot-numeral">II</span>
+            <!-- 📝 EDITAR: Símbolo de la carta -->
+            <span class="tarot-symbol" aria-hidden="true">🌙</span>
+            <span class="tarot-name">La Sacerdotisa</span>
+          </div>
+          <!-- Reverso (se ve al hacer hover) -->
+          <div class="tarot-back" aria-hidden="true">
+            <span class="tarot-back-symbol">✦</span>
+          </div>
+        </div>
+      </div>
+      <!-- 📝 EDITAR: Interpretación de la carta -->
+      <p class="tarot-desc">
+        Intuición. Lo que se guarda en silencio tiene más poder que lo que se dice.
+      </p>
+    </div>
+
+    <!-- Separador -->
+    <div class="sr-divider" aria-hidden="true">── ✦ ──</div>
+
+    <!-- QUOTE ESOTÉRICO ROTATIVO -->
+    <!-- JS rota estas citas (ver ui.js → initQuoteRotator()) -->
+    <div class="quote-widget" role="region" aria-label="Cita esotérica del momento">
+      <blockquote class="rotating-quote" id="rotating-quote">
+        "El mar recuerda todo lo que la tierra olvidó."
+      </blockquote>
+      <!-- Autora de la cita -->
+      <cite class="quote-author" id="quote-author">— GRANATTE</cite>
+    </div>
+
+  </aside>
+  <!-- /sidebar-right -->
+
+</div>
+<!-- /app -->
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     LIGHTBOX (se inserta aquí por JS al cargar)
+     Ver función initLightbox() en assets/js/ui.js
+     ══════════════════════════════════════════════════════════════ -->
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     SCRIPTS
+     Orden importante: Three.js y GSAP ya cargaron en el <head>.
+     Ahora cargamos nuestros scripts en orden de dependencia:
+     1. three-scene.js  → escena 3D (necesita THREE global)
+     2. ui.js           → interactividad general (necesita GSAP)
+     3. player.js       → reproductor de audio
+     ══════════════════════════════════════════════════════════════ -->
+<script src="assets/js/three-scene.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/player.js"></script>
+
+</body>
+</html>
